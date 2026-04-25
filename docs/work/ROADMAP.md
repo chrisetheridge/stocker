@@ -27,4 +27,3 @@ The most likely follow-on versions are:
 - v1.2: CLI and TUI over the reusable service core
 
 Future versions are not active until promoted into an epic, plan, and task.
-

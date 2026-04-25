@@ -46,7 +46,7 @@ Every source adapter must:
 Define these exported types:
 
 ```ts
-export type SourceAdapterType = "rss" | "reddit";
+export type SourceAdapterType = 'rss' | 'reddit';
 
 export type NormalizedSourceItemInput = {
   sourceId: string;
@@ -69,7 +69,10 @@ export type SourceFetchResult = {
 export type SourceAdapter<TConfig> = {
   readonly type: SourceAdapterType;
   validateConfig(input: unknown): TConfig;
-  fetchItems(config: TConfig, context: SourceFetchContext): Promise<SourceFetchResult>;
+  fetchItems(
+    config: TConfig,
+    context: SourceFetchContext,
+  ): Promise<SourceFetchResult>;
 };
 ```
 
@@ -125,7 +128,7 @@ pnpm --filter @stocker/source-adapters typecheck
 ```ts
 {
   id: string;
-  type: "rss";
+  type: 'rss';
   name: string;
   enabled: boolean;
   url: string;
@@ -187,7 +190,7 @@ pnpm --filter @stocker/source-adapters typecheck
 ```ts
 {
   id: string;
-  type: "reddit";
+  type: 'reddit';
   name: string;
   enabled: boolean;
   feedUrl: string;
@@ -318,4 +321,3 @@ pnpm --filter @stocker/core typecheck
 - [ ] New items enqueue enrichment jobs.
 - [ ] Source refresh jobs execute through the worker job system.
 - [ ] Root `pnpm test` and `pnpm typecheck` pass.
-

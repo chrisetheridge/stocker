@@ -1,0 +1,17 @@
+{
+  "name": "@stocker/worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@stocker/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "latest"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}

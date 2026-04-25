@@ -53,13 +53,37 @@ Use these persistent concepts:
 - [ ] Define enums with exact values:
 
 ```ts
-export const sourceTypes = ["rss", "reddit"] as const;
-export const itemReadStates = ["unread", "read"] as const;
-export const enrichmentStates = ["pending", "complete", "needs_review", "failed"] as const;
-export const companyMatchStatuses = ["validated", "needs_review", "rejected"] as const;
-export const relationshipTypes = ["mentioned", "competitor", "customer", "supplier"] as const;
-export const jobTypes = ["source.refresh", "item.enrich", "stock.refresh"] as const;
-export const jobStates = ["queued", "running", "succeeded", "failed", "cancelled"] as const;
+export const sourceTypes = ['rss', 'reddit'] as const;
+export const itemReadStates = ['unread', 'read'] as const;
+export const enrichmentStates = [
+  'pending',
+  'complete',
+  'needs_review',
+  'failed',
+] as const;
+export const companyMatchStatuses = [
+  'validated',
+  'needs_review',
+  'rejected',
+] as const;
+export const relationshipTypes = [
+  'mentioned',
+  'competitor',
+  'customer',
+  'supplier',
+] as const;
+export const jobTypes = [
+  'source.refresh',
+  'item.enrich',
+  'stock.refresh',
+] as const;
+export const jobStates = [
+  'queued',
+  'running',
+  'succeeded',
+  'failed',
+  'cancelled',
+] as const;
 ```
 
 - [ ] Define Zod schemas for:
@@ -401,35 +425,35 @@ pnpm --filter @stocker/db typecheck
 
 ```yaml
 app:
-  databasePath: ".stocker/stocker.sqlite"
+  databasePath: '.stocker/stocker.sqlite'
 
 sources:
-  - id: "hacker-news"
-    type: "rss"
-    name: "Hacker News"
+  - id: 'hacker-news'
+    type: 'rss'
+    name: 'Hacker News'
     enabled: true
-    url: "https://news.ycombinator.com/rss"
+    url: 'https://news.ycombinator.com/rss'
     refreshMinutes: 60
-  - id: "reddit-stocks"
-    type: "reddit"
-    name: "Reddit Stocks"
+  - id: 'reddit-stocks'
+    type: 'reddit'
+    name: 'Reddit Stocks'
     enabled: true
-    feedUrl: "https://www.reddit.com/r/stocks/.rss"
+    feedUrl: 'https://www.reddit.com/r/stocks/.rss'
     refreshMinutes: 60
 
 market:
-  defaultUniverse: "US"
+  defaultUniverse: 'US'
   provider:
-    type: "yahoo-finance2"
+    type: 'yahoo-finance2'
 
 llm:
   provider:
-    type: "openai-compatible"
-    baseUrl: "http://localhost:1234/v1"
-    apiKeyEnv: "LM_STUDIO_API_KEY"
-    model: "local-model"
+    type: 'openai-compatible'
+    baseUrl: 'http://localhost:1234/v1'
+    apiKeyEnv: 'LM_STUDIO_API_KEY'
+    model: 'local-model'
   prompts:
-    enrichmentSystem: "You extract public-company stock relevance from article metadata."
+    enrichmentSystem: 'You extract public-company stock relevance from article metadata.'
 ```
 
 **Steps:**
@@ -570,4 +594,3 @@ pnpm --filter @stocker/worker typecheck
 - [ ] DB-backed jobs enqueue, claim, retry, succeed, and fail.
 - [ ] Worker can execute jobs through shared services.
 - [ ] Root `pnpm test` and `pnpm typecheck` pass.
-

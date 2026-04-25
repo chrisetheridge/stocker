@@ -250,4 +250,3 @@ v1.0 is acceptable when:
 - Items can be saved for stock research.
 - Company/ticker corrections apply globally and can be removed.
 - The web UI uses reusable service operations rather than embedding source/enrichment logic directly.
-

@@ -1,0 +1,20 @@
+{
+  "name": "@stocker/core",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@stocker/config": "workspace:*",
+    "@stocker/db": "workspace:*",
+    "@stocker/llm": "workspace:*",
+    "@stocker/market-data": "workspace:*",
+    "@stocker/source-adapters": "workspace:*"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  }
+}

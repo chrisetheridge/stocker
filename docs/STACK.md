@@ -163,4 +163,3 @@ These details are intentionally deferred to implementation planning:
 - Exact LLM model names
 - Exact market-data normalization shape
 - Exact test runner setup
-

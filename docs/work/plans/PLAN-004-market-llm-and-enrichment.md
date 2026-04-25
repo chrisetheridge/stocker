@@ -47,7 +47,7 @@ The enrichment service must:
 **Interface Requirements:**
 
 ```ts
-export type MarketDataProviderType = "yahoo-finance2";
+export type MarketDataProviderType = 'yahoo-finance2';
 
 export type StockLookupInput = {
   ticker: string;
@@ -82,7 +82,10 @@ export type CompanySearchResult = {
 
 export type MarketDataProvider = {
   readonly type: MarketDataProviderType;
-  searchCompanies(query: string, universe: string): Promise<CompanySearchResult[]>;
+  searchCompanies(
+    query: string,
+    universe: string,
+  ): Promise<CompanySearchResult[]>;
   getSnapshot(input: StockLookupInput): Promise<StockSnapshotInput | null>;
 };
 ```
@@ -458,4 +461,3 @@ pnpm --filter @stocker/core typecheck
 - [ ] Enrichment persists complete, needs-review, and failed states.
 - [ ] Enrichment and stock refresh jobs run through worker handlers.
 - [ ] Root `pnpm test` and `pnpm typecheck` pass.
-

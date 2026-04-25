@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready
+Done
 
 ## Parent
 
@@ -22,3 +22,6 @@ Read the full task in `docs/work/plans/PLAN-001-project-foundation.md` and execu
 
 Do not proceed to TASK-002 until TASK-001 acceptance criteria and verification commands are complete.
 
+## Progress Log
+
+- 2026-04-25: Scaffolded the root pnpm/Turbo workspace, created the T3-style web app, verified web start, build, lint, typecheck, and tests.

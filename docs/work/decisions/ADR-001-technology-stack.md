@@ -109,4 +109,3 @@ The following decisions remain open and should be handled during implementation 
 - LLM enrichment schema
 - Market-data provider contract
 - Test runner and integration-test setup
-

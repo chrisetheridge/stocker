@@ -197,4 +197,3 @@ Covered by:
 - TASK-036: worker/job recovery verification
 - TASK-037: scope guardrail verification
 - TASK-038: completion notes
-

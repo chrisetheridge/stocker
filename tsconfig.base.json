@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0",
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@stocker/config": ["packages/config/src/index.ts"],
+      "@stocker/core": ["packages/core/src/index.ts"],
+      "@stocker/db": ["packages/db/src/index.ts"],
+      "@stocker/llm": ["packages/llm/src/index.ts"],
+      "@stocker/market-data": ["packages/market-data/src/index.ts"],
+      "@stocker/source-adapters": ["packages/source-adapters/src/index.ts"],
+      "@stocker/ui": ["packages/ui/src/index.ts"]
+    }
+  }
+}

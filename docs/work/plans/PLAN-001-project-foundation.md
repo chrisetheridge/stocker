@@ -54,7 +54,7 @@ Use these package names:
 
 ## TASK-001: Initialize TypeScript T3 Monorepo
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** None
 
@@ -72,7 +72,7 @@ Use these package names:
 
 **Steps:**
 
-- [ ] Create the root workspace files.
+- [x] Create the root workspace files.
 
 Root `package.json` must include:
 
@@ -102,13 +102,13 @@ Root `package.json` must include:
 
 ```yaml
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 ```
 
 `turbo.json` must define `build`, `dev`, `lint`, `test`, and `typecheck` tasks with package dependency ordering.
 
-- [ ] Scaffold the web app in `apps/web` using a T3-style starter with TypeScript, Next.js App Router, tRPC, Tailwind, Drizzle, and no auth.
+- [x] Scaffold the web app in `apps/web` using a T3-style starter with TypeScript, Next.js App Router, tRPC, Tailwind, Drizzle, and no auth.
 
 Preferred command:
 
@@ -127,9 +127,9 @@ Drizzle: yes
 Authentication: no
 ```
 
-- [ ] Rename the web package to `@stocker/web`.
+- [x] Rename the web package to `@stocker/web`.
 
-- [ ] Confirm the web app can start.
+- [x] Confirm the web app can start.
 
 Run:
 
@@ -144,24 +144,24 @@ Expected:
 Next.js starts a local development server without TypeScript or dependency errors.
 ```
 
-- [ ] Stop the dev server after verification.
+- [x] Stop the dev server after verification.
 
 **Acceptance Criteria:**
 
-- [ ] Root pnpm workspace exists.
-- [ ] `apps/web` exists and is a working T3-style Next.js app.
-- [ ] The web app uses TypeScript, tRPC, Tailwind, and Drizzle.
-- [ ] No auth provider is installed or configured.
-- [ ] Root scripts delegate through Turborepo.
+- [x] Root pnpm workspace exists.
+- [x] `apps/web` exists and is a working T3-style Next.js app.
+- [x] The web app uses TypeScript, tRPC, Tailwind, and Drizzle.
+- [x] No auth provider is installed or configured.
+- [x] Root scripts delegate through Turborepo.
 
 **Verification:**
 
-- [ ] `pnpm install` succeeds.
-- [ ] `pnpm --filter @stocker/web dev` starts successfully.
+- [x] `pnpm install` succeeds.
+- [x] `pnpm --filter @stocker/web dev` starts successfully.
 
 ## TASK-002: Create Shared Package Skeletons
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-001
 
@@ -193,19 +193,19 @@ Next.js starts a local development server without TypeScript or dependency error
 
 **Steps:**
 
-- [ ] Create each package with `"type": "module"`.
-- [ ] Each package must export `./src/index.ts`.
-- [ ] Each package must have `typecheck` and `test` scripts.
-- [ ] Add package references or path aliases so workspace packages can import each other by package name.
-- [ ] Add a trivial exported constant to each `src/index.ts` to verify package resolution.
+- [x] Create each package with `"type": "module"`.
+- [x] Each package must export `./src/index.ts`.
+- [x] Each package must have `typecheck` and `test` scripts.
+- [x] Add package references or path aliases so workspace packages can import each other by package name.
+- [x] Add a trivial exported constant to each `src/index.ts` to verify package resolution.
 
 Example:
 
 ```ts
-export const corePackageName = "@stocker/core";
+export const corePackageName = '@stocker/core';
 ```
 
-- [ ] Add workspace dependencies where needed:
+- [x] Add workspace dependencies where needed:
 
 ```text
 @stocker/core depends on @stocker/db, @stocker/config, @stocker/source-adapters, @stocker/market-data, @stocker/llm
@@ -215,19 +215,19 @@ export const corePackageName = "@stocker/core";
 
 **Acceptance Criteria:**
 
-- [ ] All shared packages exist.
-- [ ] All shared packages can be imported by package name.
-- [ ] `@stocker/web` can import from `@stocker/core`.
-- [ ] `@stocker/worker` can import from `@stocker/core`.
+- [x] All shared packages exist.
+- [x] All shared packages can be imported by package name.
+- [x] `@stocker/web` can import from `@stocker/core`.
+- [x] `@stocker/worker` can import from `@stocker/core`.
 
 **Verification:**
 
-- [ ] `pnpm typecheck` succeeds.
-- [ ] `pnpm test` succeeds.
+- [x] `pnpm typecheck` succeeds.
+- [x] `pnpm test` succeeds.
 
 ## TASK-003: Add Worker App Skeleton
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-002
 
@@ -243,44 +243,44 @@ export const corePackageName = "@stocker/core";
 
 **Steps:**
 
-- [ ] Create `@stocker/worker` package.
-- [ ] Add dependencies on `@stocker/core` and TypeScript runtime tooling.
-- [ ] Implement `createWorkerRuntime()` in `apps/worker/src/runtime.ts`.
+- [x] Create `@stocker/worker` package.
+- [x] Add dependencies on `@stocker/core` and TypeScript runtime tooling.
+- [x] Implement `createWorkerRuntime()` in `apps/worker/src/runtime.ts`.
 
 Expected initial behavior:
 
 ```ts
 export type WorkerRuntime = {
-  readonly name: "@stocker/worker";
-  readonly mode: "idle";
+  readonly name: '@stocker/worker';
+  readonly mode: 'idle';
 };
 
 export function createWorkerRuntime(): WorkerRuntime {
   return {
-    name: "@stocker/worker",
-    mode: "idle"
+    name: '@stocker/worker',
+    mode: 'idle',
   };
 }
 ```
 
-- [ ] Add a unit test that asserts `createWorkerRuntime()` returns name `@stocker/worker` and mode `idle`.
-- [ ] Add `apps/worker/src/index.ts` that creates the runtime and logs a single startup line.
+- [x] Add a unit test that asserts `createWorkerRuntime()` returns name `@stocker/worker` and mode `idle`.
+- [x] Add `apps/worker/src/index.ts` that creates the runtime and logs a single startup line.
 
 **Acceptance Criteria:**
 
-- [ ] Worker app exists as a separate package.
-- [ ] Worker can run without starting Next.js.
-- [ ] Worker imports shared packages through workspace dependencies.
+- [x] Worker app exists as a separate package.
+- [x] Worker can run without starting Next.js.
+- [x] Worker imports shared packages through workspace dependencies.
 
 **Verification:**
 
-- [ ] `pnpm --filter @stocker/worker test` passes.
-- [ ] `pnpm --filter @stocker/worker typecheck` passes.
-- [ ] `pnpm --filter @stocker/worker dev` prints a startup line and exits or idles cleanly.
+- [x] `pnpm --filter @stocker/worker test` passes.
+- [x] `pnpm --filter @stocker/worker typecheck` passes.
+- [x] `pnpm --filter @stocker/worker dev` prints a startup line and exits or idles cleanly.
 
 ## TASK-004: Standardize Test, Lint, Format, and Typecheck Commands
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-003
 
@@ -296,18 +296,18 @@ export function createWorkerRuntime(): WorkerRuntime {
 
 **Steps:**
 
-- [ ] Configure Vitest workspace discovery for `apps/*` and `packages/*`.
-- [ ] Ensure every package has a `test` script.
-- [ ] Ensure every package has a `typecheck` script.
-- [ ] Ensure packages without lintable source still have a safe `lint` script.
-- [ ] Run root commands.
+- [x] Configure Vitest workspace discovery for `apps/*` and `packages/*`.
+- [x] Ensure every package has a `test` script.
+- [x] Ensure every package has a `typecheck` script.
+- [x] Ensure packages without lintable source still have a safe `lint` script.
+- [x] Run root commands.
 
 **Acceptance Criteria:**
 
-- [ ] `pnpm test` runs all package tests.
-- [ ] `pnpm typecheck` typechecks all packages.
-- [ ] `pnpm lint` runs without package-script failures.
-- [ ] `pnpm format` formats markdown, TypeScript, JSON, and YAML.
+- [x] `pnpm test` runs all package tests.
+- [x] `pnpm typecheck` typechecks all packages.
+- [x] `pnpm lint` runs without package-script failures.
+- [x] `pnpm format` formats markdown, TypeScript, JSON, and YAML.
 
 **Verification:**
 
@@ -326,7 +326,7 @@ All commands complete successfully.
 
 ## TASK-005: Record Foundation Implementation Notes
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-004
 
@@ -339,7 +339,7 @@ All commands complete successfully.
 
 **Steps:**
 
-- [ ] Create ADR-002 with:
+- [x] Create ADR-002 with:
 
 ```text
 Status: Accepted
@@ -349,22 +349,21 @@ Decision: Record exact starter command, package manager, workspace tool, Next.js
 Consequences: Note any deviations from docs/STACK.md.
 ```
 
-- [ ] Update `docs/work/CURRENT.md` to move active task to the first task in `PLAN-002-data-config-and-jobs.md`.
+- [x] Update `docs/work/CURRENT.md` to move active task to the first task in `PLAN-002-data-config-and-jobs.md`.
 
 **Acceptance Criteria:**
 
-- [ ] ADR-002 exists and records real scaffold facts.
-- [ ] `CURRENT.md` points to the next executable task.
+- [x] ADR-002 exists and records real scaffold facts.
+- [x] `CURRENT.md` points to the next executable task.
 
 **Verification:**
 
-- [ ] `rg -n "ADR-002|TASK-006" docs/work` finds both references.
+- [x] `rg -n "ADR-002|TASK-006" docs/work` finds both references.
 
 ## Checkpoint: Foundation Complete
 
-- [ ] Root workspace commands pass.
-- [ ] Web app starts.
-- [ ] Worker app starts.
-- [ ] Shared packages typecheck.
-- [ ] ADR-002 records actual scaffold choices.
-
+- [x] Root workspace commands pass.
+- [x] Web app starts.
+- [x] Worker app starts.
+- [x] Shared packages typecheck.
+- [x] ADR-002 records actual scaffold choices.

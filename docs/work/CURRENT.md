@@ -10,7 +10,7 @@ PLAN-001: Project Foundation
 
 ## Active Task
 
-TASK-001: Initialize TypeScript T3 Monorepo
+TASK-006: Define Shared Domain Schemas
 
 ## Status
 
@@ -25,7 +25,6 @@ Ready
 - Read `docs/work/epics/EPIC-001-v1-intelligence-inbox.md`.
 - Read `docs/work/plans/PLAN-000-v1-master-work-plan.md`.
 - Read `docs/work/plans/PLAN-001-project-foundation.md`.
-- Work only on `TASK-001` until it is complete.
+- Work only on `TASK-006` until it is complete.
 - Update this file when moving to the next task.
 - Do not implement future roadmap items.
-

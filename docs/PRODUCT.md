@@ -51,4 +51,3 @@ Secondary value comes from reducing context switching and building a better save
 - Honest enrichment: LLM output can explain relevance, but ticker identity and market data must be validated before being shown as fact.
 - Visible uncertainty: uncertain matches and failed enrichment should be visible, not silently hidden.
 - No investment advice: the app surfaces context, not buy/sell/hold recommendations.
-

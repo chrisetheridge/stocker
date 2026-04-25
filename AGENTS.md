@@ -192,4 +192,3 @@ Do not invent new statuses.
 - Use the verification commands listed in the active task before marking it complete.
 - Update `docs/work/CURRENT.md` when moving to the next task.
 - If implementation reveals that a plan is wrong, update the plan first, then implement the corrected task.
-

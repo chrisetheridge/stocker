@@ -57,4 +57,3 @@ Tasks are defined inside the plan files. This index maps each task ID to its own
 - TASK-036: Verify Worker and Job Recovery Behavior
 - TASK-037: Verify No Out-of-Scope Feature Drift
 - TASK-038: Finalize Work Tracking for v1.0 Completion
-

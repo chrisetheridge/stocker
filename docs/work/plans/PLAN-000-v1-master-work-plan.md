@@ -93,4 +93,3 @@ pnpm --filter @stocker/worker typecheck
 ## v1.0 Completion Gate
 
 v1.0 is complete only when all acceptance criteria from `docs/PRD_V1.md` are demonstrated by automated tests, local manual checks, or documented verification notes.
-

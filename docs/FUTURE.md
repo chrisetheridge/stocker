@@ -135,4 +135,3 @@ Potential future uses:
 - Notify when sources stop fetching successfully
 
 Price alerts should be treated carefully because they move the product closer to a market-monitoring tool.
-

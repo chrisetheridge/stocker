@@ -499,4 +499,3 @@ pnpm --filter @stocker/web build
 - [ ] Source status page shows health and refresh actions.
 - [ ] Failed enrichment and needs-review states are visible.
 - [ ] Root `pnpm test`, `pnpm typecheck`, and web build pass.
-

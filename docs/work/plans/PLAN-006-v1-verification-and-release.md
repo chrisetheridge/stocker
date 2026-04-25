@@ -308,4 +308,3 @@ Then complete:
 - [ ] `docs/work/checklists/V1_COMPLETION_NOTES.md`
 
 v1.0 is not complete until all three checklists are complete.
-
