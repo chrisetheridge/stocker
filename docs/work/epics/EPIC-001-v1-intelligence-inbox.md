@@ -93,17 +93,22 @@ These are not part of this epic unless explicitly promoted later.
 
 ## Linked Plans
 
-No implementation plans have been created yet.
+- `docs/work/plans/PLAN-000-v1-master-work-plan.md`
+- `docs/work/plans/PLAN-COVERAGE.md`
+- `docs/work/plans/PLAN-001-project-foundation.md`
+- `docs/work/plans/PLAN-002-data-config-and-jobs.md`
+- `docs/work/plans/PLAN-003-source-ingestion.md`
+- `docs/work/plans/PLAN-004-market-llm-and-enrichment.md`
+- `docs/work/plans/PLAN-005-web-api-and-ui.md`
+- `docs/work/plans/PLAN-006-v1-verification-and-release.md`
 
 ## Linked Tasks
 
-No implementation tasks have been created yet.
+- `docs/work/tasks/TASK-INDEX.md`
+- Current executable task file: `docs/work/tasks/TASK-001-initialize-typescript-t3-monorepo.md`
 
 ## Open Questions
 
-- Tech stack has not been selected.
-- Database and persistence strategy have not been selected.
-- LLM provider abstraction details have not been designed.
-- Market data provider abstraction details have not been designed.
-- Source adapter contract details have not been designed.
-
+- Implementation has not started.
+- Exact scaffold versions will be recorded in `docs/work/decisions/ADR-002-project-scaffold.md` during TASK-005.
+- Source adapter, LLM provider, market-data provider, and job contracts are specified in the plan files and will be finalized in code during implementation.
