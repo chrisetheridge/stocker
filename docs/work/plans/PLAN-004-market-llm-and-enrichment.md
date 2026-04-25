@@ -31,7 +31,7 @@ The enrichment service must:
 
 ## TASK-017: Define Market Data Provider Interface
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-006
 
@@ -92,15 +92,15 @@ export type MarketDataProvider = {
 
 **Steps:**
 
-- [ ] Write registry tests first.
-- [ ] Implement provider registry with duplicate-provider rejection.
-- [ ] Validate provider output with Zod before returning to callers.
+- [x] Write registry tests first.
+- [x] Implement provider registry with duplicate-provider rejection.
+- [x] Validate provider output with Zod before returning to callers.
 
 **Acceptance Criteria:**
 
-- [ ] Market-data callers depend on `MarketDataProvider`.
-- [ ] Provider registry rejects duplicate provider types.
-- [ ] Output schemas reject malformed snapshots.
+- [x] Market-data callers depend on `MarketDataProvider`.
+- [x] Provider registry rejects duplicate provider types.
+- [x] Output schemas reject malformed snapshots.
 
 **Verification:**
 
@@ -111,7 +111,7 @@ pnpm --filter @stocker/market-data typecheck
 
 ## TASK-018: Implement Yahoo Finance Market Provider
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-017
 
@@ -141,19 +141,19 @@ pnpm --filter @stocker/market-data typecheck
 
 **Steps:**
 
-- [ ] Add `yahoo-finance2` dependency to `@stocker/market-data`.
-- [ ] Write tests using fixtures, not live network calls.
-- [ ] Mock `yahoo-finance2` in unit tests.
-- [ ] Implement `searchCompanies(query, universe)`.
-- [ ] Implement `getSnapshot(input)`.
-- [ ] Return `null` when provider returns no equity-like result.
-- [ ] Preserve raw provider data for debugging.
+- [x] Add `yahoo-finance2` dependency to `@stocker/market-data`.
+- [x] Write tests using fixtures, not live network calls.
+- [x] Mock `yahoo-finance2` in unit tests.
+- [x] Implement `searchCompanies(query, universe)`.
+- [x] Implement `getSnapshot(input)`.
+- [x] Return `null` when provider returns no equity-like result.
+- [x] Preserve raw provider data for debugging.
 
 **Acceptance Criteria:**
 
-- [ ] Provider returns required v1.0 fields when available.
-- [ ] Missing optional market fields do not fail the whole snapshot.
-- [ ] Live provider dependency is isolated to this adapter.
+- [x] Provider returns required v1.0 fields when available.
+- [x] Missing optional market fields do not fail the whole snapshot.
+- [x] Live provider dependency is isolated to this adapter.
 
 **Verification:**
 
@@ -164,7 +164,7 @@ pnpm --filter @stocker/market-data typecheck
 
 ## TASK-019: Define LLM Provider and Enrichment Output Schemas
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-006, TASK-009
 
@@ -205,16 +205,16 @@ pnpm --filter @stocker/market-data typecheck
 
 **Steps:**
 
-- [ ] Write schema tests for valid output.
-- [ ] Write schema tests rejecting missing company name, invalid relationship type, empty explanation, and confidence outside `0..1`.
-- [ ] Implement prompt builder that accepts item title, summary, source metadata, and prompt override config.
-- [ ] Ensure prompt text explicitly forbids buy/sell/hold recommendations.
-- [ ] Ensure prompt text asks for evidence text when available.
+- [x] Write schema tests for valid output.
+- [x] Write schema tests rejecting missing company name, invalid relationship type, empty explanation, and confidence outside `0..1`.
+- [x] Implement prompt builder that accepts item title, summary, source metadata, and prompt override config.
+- [x] Ensure prompt text explicitly forbids buy/sell/hold recommendations.
+- [x] Ensure prompt text asks for evidence text when available.
 
 **Acceptance Criteria:**
 
-- [ ] LLM structured output schema is centralized.
-- [ ] Prompt builder can be configured but still enforces no-investment-advice boundaries.
+- [x] LLM structured output schema is centralized.
+- [x] Prompt builder can be configured but still enforces no-investment-advice boundaries.
 
 **Verification:**
 
@@ -225,7 +225,7 @@ pnpm --filter @stocker/llm typecheck
 
 ## TASK-020: Implement AI SDK OpenAI-Compatible LLM Provider
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-019
 
@@ -245,19 +245,19 @@ pnpm --filter @stocker/llm typecheck
 
 **Steps:**
 
-- [ ] Read installed AI SDK docs before writing code.
-- [ ] Use `createOpenAICompatible` from `@ai-sdk/openai-compatible`.
-- [ ] Use `generateText` with structured output support for the installed AI SDK version.
-- [ ] Keep raw AI SDK calls inside `@stocker/llm`.
-- [ ] Implement `extractStockRelevance(input)` returning parsed enrichment output.
-- [ ] Add tests with a fake model/generation function instead of live LM Studio.
-- [ ] Add one skipped or separately documented manual smoke command for LM Studio local endpoint.
+- [x] Read installed AI SDK docs before writing code.
+- [x] Use `createOpenAICompatible` from `@ai-sdk/openai-compatible`.
+- [x] Use `generateText` with structured output support for the installed AI SDK version.
+- [x] Keep raw AI SDK calls inside `@stocker/llm`.
+- [x] Implement `extractStockRelevance(input)` returning parsed enrichment output.
+- [x] Add tests with a fake model/generation function instead of live LM Studio.
+- [x] Add one skipped or separately documented manual smoke command for LM Studio local endpoint.
 
 **Acceptance Criteria:**
 
-- [ ] App-level LLM service returns schema-validated structured output.
-- [ ] Bad model output fails with a typed validation error.
-- [ ] No code outside `@stocker/llm` directly calls AI SDK functions.
+- [x] App-level LLM service returns schema-validated structured output.
+- [x] Bad model output fails with a typed validation error.
+- [x] No code outside `@stocker/llm` directly calls AI SDK functions.
 
 **Verification:**
 
@@ -280,7 +280,7 @@ The smoke command prints validated structured enrichment JSON for a sample item.
 
 ## TASK-021: Implement Company/Ticker Matching Service
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-008, TASK-018, TASK-019
 
@@ -305,18 +305,18 @@ The smoke command prints validated structured enrichment JSON for a sample item.
 
 **Steps:**
 
-- [ ] Write tests for correction-first matching.
-- [ ] Write tests for validated ticker hint.
-- [ ] Write tests for ambiguous search result.
-- [ ] Write tests for no market data.
-- [ ] Implement matching service using injected repositories and market provider.
-- [ ] Ensure explanations come from LLM output but ticker facts come from provider/corrections.
+- [x] Write tests for correction-first matching.
+- [x] Write tests for validated ticker hint.
+- [x] Write tests for ambiguous search result.
+- [x] Write tests for no market data.
+- [x] Implement matching service using injected repositories and market provider.
+- [x] Ensure explanations come from LLM output but ticker facts come from provider/corrections.
 
 **Acceptance Criteria:**
 
-- [ ] Corrections override LLM hints.
-- [ ] Uncertain matches are visible as `needs_review`.
-- [ ] Ticker values are only stored when corrected or provider-validated.
+- [x] Corrections override LLM hints.
+- [x] Uncertain matches are visible as `needs_review`.
+- [x] Ticker values are only stored when corrected or provider-validated.
 
 **Verification:**
 
@@ -327,7 +327,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-022: Implement Item Enrichment Service
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-021
 
@@ -348,24 +348,24 @@ enrichItem(sourceItemId, trigger)
 
 **Steps:**
 
-- [ ] Write tests for complete enrichment.
-- [ ] Write tests for needs-review enrichment.
-- [ ] Write tests for LLM failure.
-- [ ] Write tests for market data failure with and without cached snapshot.
-- [ ] Start an enrichment run before calling LLM.
-- [ ] Build LLM input from title, summary, author, source metadata, and canonical URL.
-- [ ] Persist raw LLM output on the enrichment run.
-- [ ] Replace item companies for the item atomically.
-- [ ] Insert stock snapshots for successful market lookups.
-- [ ] Set item `enrichment_state` to `complete`, `needs_review`, or `failed`.
-- [ ] Persist failure error message when enrichment fails.
+- [x] Write tests for complete enrichment.
+- [x] Write tests for needs-review enrichment.
+- [x] Write tests for LLM failure.
+- [x] Write tests for market data failure with and without cached snapshot.
+- [x] Start an enrichment run before calling LLM.
+- [x] Build LLM input from title, summary, author, source metadata, and canonical URL.
+- [x] Persist raw LLM output on the enrichment run.
+- [x] Replace item companies for the item atomically.
+- [x] Insert stock snapshots for successful market lookups.
+- [x] Set item `enrichment_state` to `complete`, `needs_review`, or `failed`.
+- [x] Persist failure error message when enrichment fails.
 
 **Acceptance Criteria:**
 
-- [ ] Enrichment failures leave item visible.
-- [ ] Needs-review results are persisted.
-- [ ] Stale cached snapshots can be shown when live market data fails.
-- [ ] LLM output is never persisted as trusted stock data without matching validation.
+- [x] Enrichment failures leave item visible.
+- [x] Needs-review results are persisted.
+- [x] Stale cached snapshots can be shown when live market data fails.
+- [x] LLM output is never persisted as trusted stock data without matching validation.
 
 **Verification:**
 
@@ -376,7 +376,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-023: Wire Enrichment and Stock Refresh Job Handlers
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-022
 
@@ -391,17 +391,17 @@ pnpm --filter @stocker/core typecheck
 
 **Steps:**
 
-- [ ] Add `item.enrich` handler that calls `enrichItem(sourceItemId, trigger)`.
-- [ ] Add `stock.refresh` handler that refreshes one ticker snapshot and associates visibility with the item detail flow.
-- [ ] Add tests for successful enrichment job.
-- [ ] Add tests for enrichment job failure and retry behavior.
-- [ ] Add tests for stock refresh with provider failure and cached snapshot fallback.
+- [x] Add `item.enrich` handler that calls `enrichItem(sourceItemId, trigger)`.
+- [x] Add `stock.refresh` handler that refreshes one ticker snapshot and associates visibility with the item detail flow.
+- [x] Add tests for successful enrichment job.
+- [x] Add tests for enrichment job failure and retry behavior.
+- [x] Add tests for stock refresh with provider failure and cached snapshot fallback.
 
 **Acceptance Criteria:**
 
-- [ ] Worker can execute enrichment jobs.
-- [ ] Worker can execute stock refresh jobs.
-- [ ] Retry behavior comes from the shared job service.
+- [x] Worker can execute enrichment jobs.
+- [x] Worker can execute stock refresh jobs.
+- [x] Retry behavior comes from the shared job service.
 
 **Verification:**
 
@@ -412,7 +412,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-024: Implement Correction Service
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-008, TASK-021
 
@@ -434,16 +434,16 @@ removeTickerCorrection(correctionId)
 
 **Steps:**
 
-- [ ] Write tests for applying a correction.
-- [ ] Write tests for disabling a correction.
-- [ ] Write tests for duplicate correction upsert.
-- [ ] Implement service methods using repository layer.
+- [x] Write tests for applying a correction.
+- [x] Write tests for disabling a correction.
+- [x] Write tests for duplicate correction upsert.
+- [x] Implement service methods using repository layer.
 
 **Acceptance Criteria:**
 
-- [ ] Corrections apply globally.
-- [ ] Corrections are removable by disabling, not deleting.
-- [ ] Matcher can consume enabled corrections.
+- [x] Corrections apply globally.
+- [x] Corrections are removable by disabling, not deleting.
+- [x] Matcher can consume enabled corrections.
 
 **Verification:**
 
@@ -454,10 +454,10 @@ pnpm --filter @stocker/core typecheck
 
 ## Checkpoint: Enrichment Complete
 
-- [ ] Market-data interface exists.
-- [ ] Yahoo provider adapter is isolated and tested with fixtures.
-- [ ] LLM provider is AI SDK-backed and schema-validated.
-- [ ] Matching honors corrections before LLM/provider guesses.
-- [ ] Enrichment persists complete, needs-review, and failed states.
-- [ ] Enrichment and stock refresh jobs run through worker handlers.
-- [ ] Root `pnpm test` and `pnpm typecheck` pass.
+- [x] Market-data interface exists.
+- [x] Yahoo provider adapter is isolated and tested with fixtures.
+- [x] LLM provider is AI SDK-backed and schema-validated.
+- [x] Matching honors corrections before LLM/provider guesses.
+- [x] Enrichment persists complete, needs-review, and failed states.
+- [x] Enrichment and stock refresh jobs run through worker handlers.
+- [x] Root `pnpm test` and `pnpm typecheck` pass.

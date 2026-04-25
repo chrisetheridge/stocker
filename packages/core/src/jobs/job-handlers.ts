@@ -1,3 +1,5 @@
+import type { ItemEnrichmentService } from '../enrichment/item-enrichment-service';
+import type { StockRefreshService } from '../market/stock-refresh-service';
 import type { SourceRefreshService } from '../sources/source-refresh-service';
 import type {
   ItemEnrichJobPayload,
@@ -25,6 +27,45 @@ export function createSourceRefreshJobHandler(
   return async (payload: SourceRefreshJobPayload): Promise<void> => {
     const result = await dependencies.sourceRefreshService.refreshSource(
       payload.sourceId,
+      payload.trigger,
+    );
+
+    if (result.status === 'failed') {
+      throw new Error(result.errorMessage);
+    }
+  };
+}
+
+export type ItemEnrichJobHandlerDependencies = {
+  readonly itemEnrichmentService: Pick<ItemEnrichmentService, 'enrichItem'>;
+};
+
+export function createItemEnrichJobHandler(
+  dependencies: ItemEnrichJobHandlerDependencies,
+): (payload: ItemEnrichJobPayload) => Promise<void> {
+  return async (payload: ItemEnrichJobPayload): Promise<void> => {
+    const result = await dependencies.itemEnrichmentService.enrichItem(
+      payload.sourceItemId,
+      payload.trigger,
+    );
+
+    if (result.status === 'failed') {
+      throw new Error(result.errorMessage);
+    }
+  };
+}
+
+export type StockRefreshJobHandlerDependencies = {
+  readonly stockRefreshService: Pick<StockRefreshService, 'refreshStock'>;
+};
+
+export function createStockRefreshJobHandler(
+  dependencies: StockRefreshJobHandlerDependencies,
+): (payload: StockRefreshJobPayload) => Promise<void> {
+  return async (payload: StockRefreshJobPayload): Promise<void> => {
+    const result = await dependencies.stockRefreshService.refreshStock(
+      payload.sourceItemId,
+      payload.ticker,
       payload.trigger,
     );
 
