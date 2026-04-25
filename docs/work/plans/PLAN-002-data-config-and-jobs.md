@@ -31,7 +31,7 @@ Use these persistent concepts:
 
 ## TASK-006: Define Shared Domain Schemas
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-005
 
@@ -50,7 +50,7 @@ Use these persistent concepts:
 
 **Steps:**
 
-- [ ] Define enums with exact values:
+- [x] Define enums with exact values:
 
 ```ts
 export const sourceTypes = ['rss', 'reddit'] as const;
@@ -86,7 +86,7 @@ export const jobStates = [
 ] as const;
 ```
 
-- [ ] Define Zod schemas for:
+- [x] Define Zod schemas for:
 
 ```text
 SourceItem
@@ -97,22 +97,20 @@ TickerCorrection
 Job
 ```
 
-- [ ] Use ISO strings for serialized timestamps at service/API boundaries.
-- [ ] Use database-generated IDs internally.
-- [ ] Add tests that parse valid examples and reject invalid enum values.
+- [x] Use ISO strings for serialized timestamps at service/API boundaries.
+- [x] Use database-generated IDs internally.
+- [x] Add tests that parse valid examples and reject invalid enum values.
 
 **Acceptance Criteria:**
 
-- [ ] All domain enum values are centralized.
-- [ ] Zod schemas are exported from `@stocker/core`.
-- [ ] Tests reject invalid states such as `processing`, `done`, and `unknown`.
+- [x] All domain enum values are centralized.
+- [x] Zod schemas are exported from `@stocker/core`.
+- [x] Tests reject invalid states such as `processing`, `done`, and `unknown`.
 
 **Verification:**
 
-```bash
-pnpm --filter @stocker/core test
-pnpm --filter @stocker/core typecheck
-```
+- [x] `pnpm --filter @stocker/core test`
+- [x] `pnpm --filter @stocker/core typecheck`
 
 ## TASK-007: Implement Drizzle Schema and Migrations
 

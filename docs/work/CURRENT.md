@@ -6,11 +6,11 @@ EPIC-001: v1 Intelligence Inbox
 
 ## Active Plan
 
-PLAN-001: Project Foundation
+PLAN-002: Data, Config, and Jobs
 
 ## Active Task
 
-TASK-006: Define Shared Domain Schemas
+TASK-007: Implement Drizzle Schema and Migrations
 
 ## Status
 
@@ -24,7 +24,7 @@ Ready
 - Read `docs/STACK.md`.
 - Read `docs/work/epics/EPIC-001-v1-intelligence-inbox.md`.
 - Read `docs/work/plans/PLAN-000-v1-master-work-plan.md`.
-- Read `docs/work/plans/PLAN-001-project-foundation.md`.
-- Work only on `TASK-006` until it is complete.
+- Read `docs/work/plans/PLAN-002-data-config-and-jobs.md`.
+- Work only on `TASK-007` until it is complete.
 - Update this file when moving to the next task.
 - Do not implement future roadmap items.

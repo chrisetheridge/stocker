@@ -10,7 +10,8 @@
     "@stocker/db": "workspace:*",
     "@stocker/llm": "workspace:*",
     "@stocker/market-data": "workspace:*",
-    "@stocker/source-adapters": "workspace:*"
+    "@stocker/source-adapters": "workspace:*",
+    "zod": "^3.25.76"
   },
   "scripts": {
     "lint": "eslint src",
