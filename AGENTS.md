@@ -2,28 +2,31 @@
 
 This project is managed through markdown-first product, planning, and task documents.
 
-Agents must treat these files as the source of truth before making implementation changes.
+Agents must treat the markdown work system as the source of truth before making implementation changes.
 
 ## Read Order
 
-Before doing implementation work, read these files in order:
+Before implementation work, read these files in order:
 
-1. `docs/PRODUCT.md`
-2. `docs/PRD_V1.md`
-3. `docs/FUTURE.md`
-4. `docs/work/CURRENT.md`, if it exists
-5. The active epic, plan, task, and ADR files referenced by `docs/work/CURRENT.md`
+1. `docs/PRODUCT.md`, if it exists
+2. The relevant PRD or spec, if one exists
+3. `docs/STACK.md`, if it exists
+4. `docs/FUTURE.md`, if it exists
+5. `docs/work/CURRENT.md`, if it exists
+6. `docs/work/README.md`, if it exists
+7. Any master plan, coverage matrix, roadmap, ADRs, active epic, active plan, and active task files referenced by `docs/work/CURRENT.md`
 
-If `docs/work/CURRENT.md` does not exist, do not guess the active task. Ask for the current plan or create a planning document when explicitly asked.
+If `docs/work/CURRENT.md` does not exist, do not guess the active task. Ask for the current plan or create a planning document only when explicitly asked.
 
-## Work System
+## Work Directory
 
 Use this structure for project management:
 
 ```text
 docs/
   PRODUCT.md
-  PRD_V1.md
+  PRD_<version>.md
+  STACK.md
   FUTURE.md
 
   work/
@@ -32,161 +35,133 @@ docs/
     ROADMAP.md
 
     epics/
-      EPIC-001-v1-intelligence-inbox.md
+      EPIC-001-<epic-name>.md
 
     plans/
-      PLAN-001-v1-foundation.md
-      PLAN-002-ingestion-and-sources.md
-      PLAN-003-enrichment.md
+      PLAN-000-<project>-master-work-plan.md
+      PLAN-COVERAGE.md
+      PLAN-001-<implementation-slice>.md
+      PLAN-002-<implementation-slice>.md
 
     tasks/
-      TASK-001-project-scaffold.md
-      TASK-002-source-adapter-contract.md
-      TASK-003-rss-source-adapter.md
+      TASK-INDEX.md
+      TASK-001-<short-task-name>.md
 
     decisions/
-      ADR-001-service-core-first.md
+      ADR-001-<decision-name>.md
 ```
 
 ## File Responsibilities
 
-### `docs/PRODUCT.md`
+`docs/PRODUCT.md` describes the overall product, target user, product principles, and long-term shape.
 
-Describes the overall product, target user, product principles, and long-term shape.
+`docs/PRD_<version>.md` or other spec files define locked scope for a release or project.
 
-### `docs/PRD_V1.md`
+`docs/STACK.md` defines the accepted technology stack. Follow it unless a newer ADR explicitly supersedes it.
 
-Defines the locked v1.0 product scope.
+`docs/FUTURE.md` tracks ideas and later versions. Items in this file are not active work.
 
-Do not implement features outside this file unless a later PRD or active plan explicitly promotes them.
+`docs/work/CURRENT.md` is the single source of truth for active work.
 
-### `docs/FUTURE.md`
+`docs/work/ROADMAP.md` tracks future epics and rough sequencing.
 
-Tracks future ideas and later versions.
+`docs/work/epics/EPIC-*.md` describes large outcome-oriented bodies of work.
 
-Items in this file are not active work. Do not implement them unless they have been promoted into an active epic, plan, and task.
+`docs/work/plans/PLAN-*.md` breaks epics into ordered implementation slices.
 
-### `docs/work/CURRENT.md`
+`docs/work/tasks/TASK-*.md` contains focused executable tasks for agents.
 
-The single source of truth for active work.
+`docs/work/decisions/ADR-*.md` records durable architecture decisions.
 
-It should identify:
+## Current Work
+
+`docs/work/CURRENT.md` must identify:
 
 - Active epic
 - Active plan
 - Active task
 - Current status
-- Any special instructions for the current agent session
+- Any special instructions for the active task
 
-Example:
+Rules:
 
-```markdown
-# Current Work
+- Do not infer active work from filenames, roadmap order, or personal judgment.
+- Do not start a plan unless `CURRENT.md` points to it or the user explicitly asks for it.
+- Do not start the next task until the current task's acceptance criteria and verification steps are complete.
+- When a task is complete, update `CURRENT.md` to the next task or mark the work ready for review.
+- If `CURRENT.md` is missing or stale, pause implementation and ask the user whether to create or update it.
 
-## Active Epic
-EPIC-001: v1 Intelligence Inbox
+## Planning Rules
 
-## Active Plan
-PLAN-001: v1 Foundation
+Every implementation plan should:
 
-## Active Task
-TASK-002: Source Adapter Contract
+- Live under `docs/work/plans/`.
+- Use stable task IDs.
+- List dependencies for every task.
+- Include acceptance criteria and verification commands for every task.
+- Include checkpoints between major phases.
+- Avoid placeholders such as `TBD`, `TODO`, `decide later`, or vague instructions.
+- Keep tasks small enough for a focused agent session.
+- Map back to product or PRD requirements directly or through a coverage matrix.
 
-## Status
-In Progress
+Every task should:
 
-## Agent Instructions
-- Read the active epic, plan, and task before coding.
-- Only work on the active task unless instructed otherwise.
-- Update task progress before stopping.
-- Do not implement items from `docs/FUTURE.md` unless promoted into a plan.
-```
+- Have a clear goal.
+- State its parent plan.
+- Define in-scope and out-of-scope work.
+- Name likely files or modules.
+- Include acceptance criteria.
+- Include exact verification steps.
+- Record progress before the agent stops.
 
-### `docs/work/ROADMAP.md`
+Future work should:
 
-Tracks future epics and their rough order.
-
-Use this for planned future work that is more concrete than raw ideas but not yet active.
-
-### `docs/work/epics/EPIC-*.md`
-
-Epics describe large outcome-oriented bodies of work.
-
-Each epic should include:
-
-- Goal
-- Scope
-- Out of scope
-- Linked PRD or product docs
-- Linked plans
-- Success criteria
-
-### `docs/work/plans/PLAN-*.md`
-
-Plans break epics into ordered implementation slices.
-
-Each plan should include:
-
-- Overview
-- Architecture decisions or references to ADRs
-- Ordered task list
-- Dependencies
-- Checkpoints
-- Risks
-- Open questions
-
-### `docs/work/tasks/TASK-*.md`
-
-Tasks are the unit of work for implementation agents.
-
-Each task should be small enough to complete, test, and verify in one focused session.
-
-### `docs/work/decisions/ADR-*.md`
-
-ADRs record durable architecture decisions.
-
-Write an ADR for decisions that would be expensive to reverse, including stack choice, database choice, service-core architecture, source adapter design, provider abstractions, and API boundaries.
+- Live in `docs/FUTURE.md` or `docs/work/ROADMAP.md`.
+- Stay inactive until promoted into an epic, plan, and task.
+- Not be implemented opportunistically.
 
 ## Task Template
 
 Use this template for task files:
 
 ```markdown
-# TASK-002: Source Adapter Contract
+# TASK-001: Short Task Name
 
 ## Status
+
 Ready
 
 ## Parent
-PLAN-002: Ingestion and Sources
+
+PLAN-001: Plan Name
 
 ## Goal
-Define the shared interface that all source adapters must implement.
+
+One sentence describing the outcome of this task.
 
 ## Scope
-- Create source adapter contract
-- Add config validation shape
-- Add normalized inbox item shape
-- Add source health/error shape
+
+- Specific thing included in this task
+- Specific thing included in this task
 
 ## Out of Scope
-- RSS implementation
-- Reddit implementation
-- UI
+
+- Specific thing intentionally excluded from this task
+- Specific thing intentionally excluded from this task
 
 ## Acceptance Criteria
-- [ ] New adapters can validate config
-- [ ] New adapters can fetch source items
-- [ ] New adapters normalize into shared inbox item records
-- [ ] Source errors can be reported consistently
+
+- [ ] Specific, testable condition
+- [ ] Specific, testable condition
 
 ## Verification
-- [ ] Unit tests cover a mock adapter
-- [ ] Type checks pass
-- [ ] Contract is documented
+
+- [ ] Exact command or manual check
+- [ ] Exact command or manual check
 
 ## Progress Log
-- 2026-04-25: Created
+
+- YYYY-MM-DD: Created
 ```
 
 ## Status Vocabulary
@@ -206,31 +181,15 @@ Do not invent new statuses.
 
 ## Agent Workflow Rules
 
-- Read the relevant product, PRD, current work, plan, task, and ADR docs before coding.
+- Read the relevant product, PRD/spec, stack, current work, plan, task, and ADR docs before coding.
 - Work only on the active task unless the user explicitly changes scope.
 - Keep task progress updated before stopping.
 - Add verification notes to the task after running tests, builds, or manual checks.
 - If scope changes, update the relevant plan or task before implementing the change.
 - If a decision affects architecture or future implementation, add or update an ADR.
 - Do not implement roadmap or future ideas until they are promoted into active work.
-- Do not turn `docs/FUTURE.md` items into code opportunistically.
 - Prefer small, verifiable tasks over broad implementation sweeps.
-
-## Core Product Guardrails
-
-v1.0 is an intelligence inbox backed by a reusable local service core.
-
-The web app is the first client. Future CLI, TUI, and automation clients should reuse the same service operations.
-
-v1.0 does not include:
-
-- Buy, sell, or hold recommendations
-- Portfolio tracking
-- Alerts or notifications
-- Historical price tracking
-- Full-text article extraction
-- Embedded article reading
-- CLI or TUI client
-- Multi-user support or authentication
-- User-facing plugin marketplace
+- Use the verification commands listed in the active task before marking it complete.
+- Update `docs/work/CURRENT.md` when moving to the next task.
+- If implementation reveals that a plan is wrong, update the plan first, then implement the corrected task.
 
