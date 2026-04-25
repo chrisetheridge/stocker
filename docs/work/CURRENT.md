@@ -6,11 +6,11 @@ EPIC-001: v1 Intelligence Inbox
 
 ## Active Plan
 
-PLAN-002: Data, Config, and Jobs
+PLAN-003: Source Ingestion
 
 ## Active Task
 
-TASK-007: Implement Drizzle Schema and Migrations
+TASK-012: Define Source Adapter Interface
 
 ## Status
 
@@ -24,7 +24,7 @@ Ready
 - Read `docs/STACK.md`.
 - Read `docs/work/epics/EPIC-001-v1-intelligence-inbox.md`.
 - Read `docs/work/plans/PLAN-000-v1-master-work-plan.md`.
-- Read `docs/work/plans/PLAN-002-data-config-and-jobs.md`.
-- Work only on `TASK-007` until it is complete.
-- Update this file when moving to the next task.
+- Read `docs/work/plans/PLAN-003-source-ingestion.md`.
+- PLAN-002 is complete and the active work has moved to PLAN-003.
+- Work only on `TASK-012` until it is complete.
 - Do not implement future roadmap items.

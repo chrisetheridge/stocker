@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@stocker/core": "workspace:*"
+    "@stocker/config": "workspace:*",
+    "@stocker/core": "workspace:*",
+    "@stocker/db": "workspace:*"
   },
   "devDependencies": {
     "tsx": "latest"

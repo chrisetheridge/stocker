@@ -114,7 +114,7 @@ Job
 
 ## TASK-007: Implement Drizzle Schema and Migrations
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-006
 
@@ -268,8 +268,8 @@ unique(company_name, correct_ticker, correct_exchange)
 
 **Steps:**
 
-- [ ] Implement Drizzle schema with the exact table names and columns above.
-- [ ] Add indexes for:
+- [x] Implement Drizzle schema with the exact table names and columns above.
+- [x] Add indexes for:
 
 ```text
 source_items.enrichment_state
@@ -282,15 +282,15 @@ item_companies.ticker
 stock_snapshots.ticker
 ```
 
-- [ ] Add migration generation command to `@stocker/db`.
-- [ ] Add migration run command to `@stocker/db`.
-- [ ] Add a schema test that creates an in-memory or temporary SQLite database, migrates it, inserts one source and one source item, and reads them back.
+- [x] Add migration generation command to `@stocker/db`.
+- [x] Add migration run command to `@stocker/db`.
+- [x] Add a schema test that creates an in-memory or temporary SQLite database, migrates it, inserts one source and one source item, and reads them back.
 
 **Acceptance Criteria:**
 
-- [ ] All required tables exist.
-- [ ] Uniqueness prevents duplicate source items for the same source/external ID.
-- [ ] A migrated empty database can accept and return a source item.
+- [x] All required tables exist.
+- [x] Uniqueness prevents duplicate source items for the same source/external ID.
+- [x] A migrated empty database can accept and return a source item.
 
 **Verification:**
 
@@ -301,7 +301,7 @@ pnpm --filter @stocker/db typecheck
 
 ## TASK-008: Implement Repository Layer
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-007
 
@@ -381,18 +381,18 @@ listCorrections()
 
 **Steps:**
 
-- [ ] Write repository tests first using a temporary SQLite database.
-- [ ] Implement repositories with explicit input/output types.
-- [ ] Keep JSON serialization inside repositories for `*_json` columns.
-- [ ] Return parsed objects to callers.
-- [ ] Ensure repository methods do not import from web or worker packages.
+- [x] Write repository tests first using a temporary SQLite database.
+- [x] Implement repositories with explicit input/output types.
+- [x] Keep JSON serialization inside repositories for `*_json` columns.
+- [x] Return parsed objects to callers.
+- [x] Ensure repository methods do not import from web or worker packages.
 
 **Acceptance Criteria:**
 
-- [ ] Repositories hide Drizzle table details from `@stocker/core`.
-- [ ] JSON columns round-trip as typed objects.
-- [ ] Inbox filters work for source, ticker/company, read state, saved state, and enrichment state.
-- [ ] Job claiming returns at most one queued runnable job and marks it running.
+- [x] Repositories hide Drizzle table details from `@stocker/core`.
+- [x] JSON columns round-trip as typed objects.
+- [x] Inbox filters work for source, ticker/company, read state, saved state, and enrichment state.
+- [x] Job claiming returns at most one queued runnable job and marks it running.
 
 **Verification:**
 
@@ -403,7 +403,7 @@ pnpm --filter @stocker/db typecheck
 
 ## TASK-009: Implement YAML Config Loader
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-006
 
@@ -456,20 +456,20 @@ llm:
 
 **Steps:**
 
-- [ ] Define Zod schemas for the config shape above.
-- [ ] Require unique source IDs.
-- [ ] Default `enabled` to `true`.
-- [ ] Default source `refreshMinutes` to `60`.
-- [ ] Default `market.defaultUniverse` to `US`.
-- [ ] Implement `loadConfig(path)` that reads YAML, validates it, applies defaults, and returns typed config.
-- [ ] Implement `loadConfigFromEnv()` using `STOCKER_CONFIG_PATH`, defaulting to `config/stocker.yaml`.
-- [ ] Add tests for valid config, duplicate source IDs, invalid source type, missing LLM model, and default values.
+- [x] Define Zod schemas for the config shape above.
+- [x] Require unique source IDs.
+- [x] Default `enabled` to `true`.
+- [x] Default source `refreshMinutes` to `60`.
+- [x] Default `market.defaultUniverse` to `US`.
+- [x] Implement `loadConfig(path)` that reads YAML, validates it, applies defaults, and returns typed config.
+- [x] Implement `loadConfigFromEnv()` using `STOCKER_CONFIG_PATH`, defaulting to `config/stocker.yaml`.
+- [x] Add tests for valid config, duplicate source IDs, invalid source type, missing LLM model, and default values.
 
 **Acceptance Criteria:**
 
-- [ ] Config validation fails with actionable error messages.
-- [ ] Example config validates.
-- [ ] Config package has no dependency on web or worker packages.
+- [x] Config validation fails with actionable error messages.
+- [x] Example config validates.
+- [x] Config package has no dependency on web or worker packages.
 
 **Verification:**
 
@@ -480,7 +480,7 @@ pnpm --filter @stocker/config typecheck
 
 ## TASK-010: Implement DB-Backed Job Service
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-008
 
@@ -526,21 +526,21 @@ pnpm --filter @stocker/config typecheck
 
 **Steps:**
 
-- [ ] Define Zod schemas for each job payload.
-- [ ] Implement `enqueueSourceRefresh(sourceId, trigger)`.
-- [ ] Implement `enqueueItemEnrichment(sourceItemId, trigger)`.
-- [ ] Implement `enqueueStockRefresh(sourceItemId, ticker, trigger)`.
-- [ ] Implement `claimAndRunNextJob(workerId, handlers)`.
-- [ ] Retry failed jobs until `attempt_count` reaches `max_attempts`.
-- [ ] Mark failed jobs as `failed` after the final attempt.
-- [ ] Add tests for successful job, retryable failure, terminal failure, and invalid payload rejection.
+- [x] Define Zod schemas for each job payload.
+- [x] Implement `enqueueSourceRefresh(sourceId, trigger)`.
+- [x] Implement `enqueueItemEnrichment(sourceItemId, trigger)`.
+- [x] Implement `enqueueStockRefresh(sourceItemId, ticker, trigger)`.
+- [x] Implement `claimAndRunNextJob(workerId, handlers)`.
+- [x] Retry failed jobs until `attempt_count` reaches `max_attempts`.
+- [x] Mark failed jobs as `failed` after the final attempt.
+- [x] Add tests for successful job, retryable failure, terminal failure, and invalid payload rejection.
 
 **Acceptance Criteria:**
 
-- [ ] Job payloads are validated before execution.
-- [ ] Worker can claim jobs without web process involvement.
-- [ ] Failed jobs retain error messages.
-- [ ] Retry behavior is deterministic and tested.
+- [x] Job payloads are validated before execution.
+- [x] Worker can claim jobs without web process involvement.
+- [x] Failed jobs retain error messages.
+- [x] Retry behavior is deterministic and tested.
 
 **Verification:**
 
@@ -551,7 +551,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-011: Connect Worker Runtime to Job Service
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-010
 
@@ -565,17 +565,17 @@ pnpm --filter @stocker/core typecheck
 
 **Steps:**
 
-- [ ] Extend `createWorkerRuntime()` to accept config, database client, job service, handlers, worker ID, and polling interval.
-- [ ] Implement one `runOnce()` method that claims and executes at most one job.
-- [ ] Implement one `runLoop()` method that repeatedly calls `runOnce()` with a delay.
-- [ ] Keep signal handling in `apps/worker/src/index.ts`.
-- [ ] Add tests using fake job service and fake handlers.
+- [x] Extend `createWorkerRuntime()` to accept config, database client, job service, handlers, worker ID, and polling interval.
+- [x] Implement one `runOnce()` method that claims and executes at most one job.
+- [x] Implement one `runLoop()` method that repeatedly calls `runOnce()` with a delay.
+- [x] Keep signal handling in `apps/worker/src/index.ts`.
+- [x] Add tests using fake job service and fake handlers.
 
 **Acceptance Criteria:**
 
-- [ ] Worker can run one job for deterministic tests.
-- [ ] Worker loop is separate from job execution logic.
-- [ ] Worker does not import web code.
+- [x] Worker can run one job for deterministic tests.
+- [x] Worker loop is separate from job execution logic.
+- [x] Worker does not import web code.
 
 **Verification:**
 
@@ -586,9 +586,9 @@ pnpm --filter @stocker/worker typecheck
 
 ## Checkpoint: Data, Config, and Jobs Complete
 
-- [ ] Database schema exists and migrates.
-- [ ] Repositories are tested.
-- [ ] YAML config loads and validates.
-- [ ] DB-backed jobs enqueue, claim, retry, succeed, and fail.
-- [ ] Worker can execute jobs through shared services.
-- [ ] Root `pnpm test` and `pnpm typecheck` pass.
+- [x] Database schema exists and migrates.
+- [x] Repositories are tested.
+- [x] YAML config loads and validates.
+- [x] DB-backed jobs enqueue, claim, retry, succeed, and fail.
+- [x] Worker can execute jobs through shared services.
+- [x] Root `pnpm test` and `pnpm typecheck` pass.
