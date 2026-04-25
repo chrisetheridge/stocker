@@ -28,7 +28,7 @@ Every source adapter must:
 
 ## TASK-012: Define Source Adapter Interface
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-009
 
@@ -88,16 +88,16 @@ logger
 
 **Steps:**
 
-- [ ] Write registry tests first.
-- [ ] Implement `createSourceAdapterRegistry(adapters)`.
-- [ ] Registry must reject duplicate adapter types.
-- [ ] Registry must return adapter by source type.
-- [ ] Registry must throw an actionable error for unknown source types.
+- [x] Write registry tests first.
+- [x] Implement `createSourceAdapterRegistry(adapters)`.
+- [x] Registry must reject duplicate adapter types.
+- [x] Registry must return adapter by source type.
+- [x] Registry must throw an actionable error for unknown source types.
 
 **Acceptance Criteria:**
 
-- [ ] Adding a new source requires implementing `SourceAdapter<TConfig>` and registering it.
-- [ ] Registry is tested for duplicate and unknown source behavior.
+- [x] Adding a new source requires implementing `SourceAdapter<TConfig>` and registering it.
+- [x] Registry is tested for duplicate and unknown source behavior.
 
 **Verification:**
 
@@ -108,7 +108,7 @@ pnpm --filter @stocker/source-adapters typecheck
 
 ## TASK-013: Implement RSS/Atom Adapter
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-012
 
@@ -148,18 +148,18 @@ pnpm --filter @stocker/source-adapters typecheck
 
 **Steps:**
 
-- [ ] Add unit tests with fixture XML for RSS and Atom.
-- [ ] Test malformed feed response returns a thrown error with feed URL.
-- [ ] Test entries without title or link are skipped and produce warnings.
-- [ ] Implement config validation.
-- [ ] Implement fetch with injected `context.fetch`.
-- [ ] Implement normalization.
+- [x] Add unit tests with fixture XML for RSS and Atom.
+- [x] Test malformed feed response returns a thrown error with feed URL.
+- [x] Test entries without title or link are skipped and produce warnings.
+- [x] Implement config validation.
+- [x] Implement fetch with injected `context.fetch`.
+- [x] Implement normalization.
 
 **Acceptance Criteria:**
 
-- [ ] RSS and Atom fixture feeds normalize into `NormalizedSourceItemInput`.
-- [ ] Invalid item records do not crash the whole feed.
-- [ ] Feed-level failures are surfaced to the source refresh service.
+- [x] RSS and Atom fixture feeds normalize into `NormalizedSourceItemInput`.
+- [x] Invalid item records do not crash the whole feed.
+- [x] Feed-level failures are surfaced to the source refresh service.
 
 **Verification:**
 
@@ -170,7 +170,7 @@ pnpm --filter @stocker/source-adapters typecheck
 
 ## TASK-014: Implement Reddit Public Feed Adapter
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-012
 
@@ -210,18 +210,18 @@ pnpm --filter @stocker/source-adapters typecheck
 
 **Steps:**
 
-- [ ] Add tests with a Reddit RSS fixture containing a link post and a text post.
-- [ ] Verify both post types are accepted.
-- [ ] Verify missing title or link skips the item with a warning.
-- [ ] Implement config validation.
-- [ ] Implement fetch with a user-agent header suitable for a local app.
-- [ ] Normalize Reddit-specific metadata without fetching comments.
+- [x] Add tests with a Reddit RSS fixture containing a link post and a text post.
+- [x] Verify both post types are accepted.
+- [x] Verify missing title or link skips the item with a warning.
+- [x] Implement config validation.
+- [x] Implement fetch with a user-agent header suitable for a local app.
+- [x] Normalize Reddit-specific metadata without fetching comments.
 
 **Acceptance Criteria:**
 
-- [ ] Reddit public feed posts become inbox items.
-- [ ] Link posts and text posts are both supported.
-- [ ] Reddit comment summaries are not implemented in v1.0.
+- [x] Reddit public feed posts become inbox items.
+- [x] Link posts and text posts are both supported.
+- [x] Reddit comment summaries are not implemented in v1.0.
 
 **Verification:**
 
@@ -232,7 +232,7 @@ pnpm --filter @stocker/source-adapters typecheck
 
 ## TASK-015: Implement Source Refresh Service
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-008, TASK-010, TASK-013, TASK-014
 
@@ -257,21 +257,21 @@ listSourceStatus()
 
 **Steps:**
 
-- [ ] Write tests with fake repositories, fake adapters, and fake job service.
-- [ ] Test successful refresh inserts source items and enqueues one `item.enrich` job per new item.
-- [ ] Test duplicate source items do not enqueue duplicate enrichment jobs.
-- [ ] Test adapter failure updates source health with error message.
-- [ ] Test disabled source is skipped.
-- [ ] Implement service methods.
-- [ ] Ensure refresh service does not import web or worker code.
+- [x] Write tests with fake repositories, fake adapters, and fake job service.
+- [x] Test successful refresh inserts source items and enqueues one `item.enrich` job per new item.
+- [x] Test duplicate source items do not enqueue duplicate enrichment jobs.
+- [x] Test adapter failure updates source health with error message.
+- [x] Test disabled source is skipped.
+- [x] Implement service methods.
+- [x] Ensure refresh service does not import web or worker code.
 
 **Acceptance Criteria:**
 
-- [ ] Manual refresh can refresh one source.
-- [ ] Scheduled refresh can enqueue due source refresh jobs.
-- [ ] Source health records last success and last error.
-- [ ] New items enter the inbox with `enrichment_state = pending`.
-- [ ] New items enqueue enrichment jobs.
+- [x] Manual refresh can refresh one source.
+- [x] Scheduled refresh can enqueue due source refresh jobs.
+- [x] Source health records last success and last error.
+- [x] New items enter the inbox with `enrichment_state = pending`.
+- [x] New items enqueue enrichment jobs.
 
 **Verification:**
 
@@ -282,7 +282,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-016: Wire Source Refresh Job Handler
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-015
 
@@ -295,15 +295,15 @@ pnpm --filter @stocker/core typecheck
 
 **Steps:**
 
-- [ ] Add handler for `source.refresh` payloads.
-- [ ] Handler must call `refreshSource(sourceId, trigger)`.
-- [ ] Handler must throw an error if source ID does not exist.
-- [ ] Add tests for success and missing source.
+- [x] Add handler for `source.refresh` payloads.
+- [x] Handler must call `refreshSource(sourceId, trigger)`.
+- [x] Handler must throw an error if source ID does not exist.
+- [x] Add tests for success and missing source.
 
 **Acceptance Criteria:**
 
-- [ ] Worker can execute source refresh jobs through job handlers.
-- [ ] Handler uses shared services only.
+- [x] Worker can execute source refresh jobs through job handlers.
+- [x] Handler uses shared services only.
 
 **Verification:**
 
@@ -314,10 +314,10 @@ pnpm --filter @stocker/core typecheck
 
 ## Checkpoint: Source Ingestion Complete
 
-- [ ] RSS adapter works against fixtures.
-- [ ] Reddit feed adapter works against fixtures.
-- [ ] Source adapter registry rejects invalid registrations.
-- [ ] Source refresh service persists items and source health.
-- [ ] New items enqueue enrichment jobs.
-- [ ] Source refresh jobs execute through the worker job system.
-- [ ] Root `pnpm test` and `pnpm typecheck` pass.
+- [x] RSS adapter works against fixtures.
+- [x] Reddit feed adapter works against fixtures.
+- [x] Source adapter registry rejects invalid registrations.
+- [x] Source refresh service persists items and source health.
+- [x] New items enqueue enrichment jobs.
+- [x] Source refresh jobs execute through the worker job system.
+- [x] Root `pnpm test` and `pnpm typecheck` pass.

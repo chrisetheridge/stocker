@@ -1,8 +1,8 @@
-import { eq, type InferSelectModel } from "drizzle-orm";
-import { randomUUID } from "node:crypto";
+import { eq, type InferSelectModel } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 
-import { enrichmentRuns, itemCompanies, itemEnrichments } from "../schema";
-import type { Database } from "../client";
+import { enrichmentRuns, itemCompanies, itemEnrichments } from '../schema';
+import type { Database } from '../client';
 import type {
   EnrichmentRunRecord,
   ItemCompanyInput,
@@ -10,12 +10,12 @@ import type {
   ItemEnrichmentInput,
   ItemEnrichmentRecord,
   JsonRecord,
-} from "../types";
+} from '../types';
 import {
   parseJsonRecord,
   stringifyJsonRecord,
   toNullableText,
-} from "./helpers";
+} from './helpers';
 
 type EnrichmentRunRow = InferSelectModel<typeof enrichmentRuns>;
 type ItemEnrichmentRow = InferSelectModel<typeof itemEnrichments>;
@@ -29,7 +29,9 @@ function mapRun(row: EnrichmentRunRow): EnrichmentRunRecord {
     startedAt: row.startedAt,
     finishedAt: row.finishedAt ?? null,
     errorMessage: row.errorMessage ?? null,
-    rawLlmOutput: row.rawLlmOutputJson ? parseJsonRecord(row.rawLlmOutputJson) : null,
+    rawLlmOutput: row.rawLlmOutputJson
+      ? parseJsonRecord(row.rawLlmOutputJson)
+      : null,
     createdAt: row.createdAt,
   };
 }
@@ -70,16 +72,13 @@ function mapItemCompany(row: ItemCompanyRow): ItemCompanyRecord {
 export class EnrichmentRepository {
   constructor(private readonly database: Database) {}
 
-  async startRun(
-    itemId: string,
-    now: string,
-  ): Promise<EnrichmentRunRecord> {
+  async startRun(itemId: string, now: string): Promise<EnrichmentRunRecord> {
     const [row] = await this.database
       .insert(enrichmentRuns)
       .values({
         id: randomUUID(),
         sourceItemId: itemId,
-        state: "running",
+        state: 'running',
         startedAt: now,
         finishedAt: null,
         errorMessage: null,
@@ -89,7 +88,7 @@ export class EnrichmentRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to start enrichment run");
+      throw new Error('Failed to start enrichment run');
     }
 
     return mapRun(row);
@@ -103,7 +102,7 @@ export class EnrichmentRepository {
     const [row] = await this.database
       .update(enrichmentRuns)
       .set({
-        state: "complete",
+        state: 'complete',
         finishedAt: now,
         errorMessage: null,
         rawLlmOutputJson: stringifyJsonRecord(rawOutput),
@@ -122,7 +121,7 @@ export class EnrichmentRepository {
     const [row] = await this.database
       .update(enrichmentRuns)
       .set({
-        state: "failed",
+        state: 'failed',
         finishedAt: now,
         errorMessage,
       })
@@ -166,7 +165,7 @@ export class EnrichmentRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to upsert item enrichment");
+      throw new Error('Failed to upsert item enrichment');
     }
 
     return mapItemEnrichment(row);

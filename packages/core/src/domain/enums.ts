@@ -1,31 +1,35 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const sourceTypes = ["rss", "reddit"] as const;
-export const itemReadStates = ["unread", "read"] as const;
+export const sourceTypes = ['rss', 'reddit'] as const;
+export const itemReadStates = ['unread', 'read'] as const;
 export const enrichmentStates = [
-  "pending",
-  "complete",
-  "needs_review",
-  "failed",
+  'pending',
+  'complete',
+  'needs_review',
+  'failed',
 ] as const;
 export const companyMatchStatuses = [
-  "validated",
-  "needs_review",
-  "rejected",
+  'validated',
+  'needs_review',
+  'rejected',
 ] as const;
 export const relationshipTypes = [
-  "mentioned",
-  "competitor",
-  "customer",
-  "supplier",
+  'mentioned',
+  'competitor',
+  'customer',
+  'supplier',
 ] as const;
-export const jobTypes = ["source.refresh", "item.enrich", "stock.refresh"] as const;
+export const jobTypes = [
+  'source.refresh',
+  'item.enrich',
+  'stock.refresh',
+] as const;
 export const jobStates = [
-  "queued",
-  "running",
-  "succeeded",
-  "failed",
-  "cancelled",
+  'queued',
+  'running',
+  'succeeded',
+  'failed',
+  'cancelled',
 ] as const;
 
 export type SourceType = (typeof sourceTypes)[number];

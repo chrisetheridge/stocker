@@ -1,1 +1,1 @@
-export const marketDataPackageName = "@stocker/market-data";
+export const marketDataPackageName = '@stocker/market-data';

@@ -1,10 +1,14 @@
-import { desc, eq, inArray, type InferSelectModel } from "drizzle-orm";
-import { randomUUID } from "node:crypto";
+import { desc, eq, inArray, type InferSelectModel } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 
-import { stockSnapshots } from "../schema";
-import type { Database } from "../client";
-import type { StockSnapshotInput, StockSnapshotRecord } from "../types";
-import { parseJsonRecord, stringifyJsonRecord, toNullableText } from "./helpers";
+import { stockSnapshots } from '../schema';
+import type { Database } from '../client';
+import type { StockSnapshotInput, StockSnapshotRecord } from '../types';
+import {
+  parseJsonRecord,
+  stringifyJsonRecord,
+  toNullableText,
+} from './helpers';
 
 type StockSnapshotRow = InferSelectModel<typeof stockSnapshots>;
 
@@ -31,7 +35,9 @@ function mapSnapshot(row: StockSnapshotRow): StockSnapshotRecord {
 export class StockSnapshotsRepository {
   constructor(private readonly database: Database) {}
 
-  async insertSnapshot(input: StockSnapshotInput): Promise<StockSnapshotRecord> {
+  async insertSnapshot(
+    input: StockSnapshotInput,
+  ): Promise<StockSnapshotRecord> {
     const [row] = await this.database
       .insert(stockSnapshots)
       .values({
@@ -54,7 +60,7 @@ export class StockSnapshotsRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to insert stock snapshot");
+      throw new Error('Failed to insert stock snapshot');
     }
 
     return mapSnapshot(row);
@@ -71,9 +77,7 @@ export class StockSnapshotsRepository {
     return row ? mapSnapshot(row) : null;
   }
 
-  async getLatestSnapshots(
-    tickers: string[],
-  ): Promise<StockSnapshotRecord[]> {
+  async getLatestSnapshots(tickers: string[]): Promise<StockSnapshotRecord[]> {
     if (tickers.length === 0) {
       return [];
     }

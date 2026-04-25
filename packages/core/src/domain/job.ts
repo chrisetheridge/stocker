@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { jobStateSchema, jobTypeSchema } from "./enums";
+import { jobStateSchema, jobTypeSchema } from './enums';
 
 const isoTimestampSchema = z.string().datetime({ offset: true });
 const jsonRecordSchema = z.record(z.string(), z.unknown());

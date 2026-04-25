@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready
+Done
 
 ## Parent
 
@@ -26,14 +26,16 @@ Create the plugin-like source adapter base interface and registry for RSS and Re
 
 ## Acceptance Criteria
 
-- [ ] Adding a new source requires implementing `SourceAdapter<TConfig>` and registering it
-- [ ] Registry is tested for duplicate and unknown source behavior
+- [x] Adding a new source requires implementing `SourceAdapter<TConfig>` and registering it
+- [x] Registry is tested for duplicate and unknown source behavior
 
 ## Verification
 
-- [ ] `pnpm --filter @stocker/source-adapters test`
-- [ ] `pnpm --filter @stocker/source-adapters typecheck`
+- [x] `pnpm --filter @stocker/source-adapters test`
+- [x] `pnpm --filter @stocker/source-adapters typecheck`
 
 ## Progress Log
 
 - 2026-04-25: Created as the next active task after PLAN-002 completion.
+- 2026-04-25: Marked in progress before implementation of the source adapter contract.
+- 2026-04-25: Implemented registry and contract; package test and typecheck passed.

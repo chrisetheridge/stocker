@@ -16,7 +16,11 @@ export type SourceRecord = {
 
 export type SourceUpsertInput = Omit<
   SourceRecord,
-  "config" | "lastFetchedAt" | "lastSuccessAt" | "lastErrorAt" | "lastErrorMessage"
+  | 'config'
+  | 'lastFetchedAt'
+  | 'lastSuccessAt'
+  | 'lastErrorAt'
+  | 'lastErrorMessage'
 > & {
   config: JsonRecord;
   lastFetchedAt?: string | null;
@@ -45,7 +49,7 @@ export type SourceItemRecord = {
 
 export type SourceItemUpsertInput = Omit<
   SourceItemRecord,
-  "sourceMetadata" | "summary" | "author" | "publishedAt"
+  'sourceMetadata' | 'summary' | 'author' | 'publishedAt'
 > & {
   sourceMetadata: JsonRecord;
   summary?: string | null;
@@ -70,7 +74,7 @@ export type ItemCompanyRecord = {
 
 export type ItemCompanyInput = Omit<
   ItemCompanyRecord,
-  "ticker" | "exchange" | "evidenceText"
+  'ticker' | 'exchange' | 'evidenceText'
 > & {
   ticker?: string | null;
   exchange?: string | null;
@@ -93,7 +97,12 @@ export type ItemEnrichmentRecord = {
 
 export type ItemEnrichmentInput = Omit<
   ItemEnrichmentRecord,
-  "summary" | "modelProvider" | "modelName" | "promptVersion" | "completedAt" | "errorMessage"
+  | 'summary'
+  | 'modelProvider'
+  | 'modelName'
+  | 'promptVersion'
+  | 'completedAt'
+  | 'errorMessage'
 > & {
   summary?: string | null;
   modelProvider?: string | null;
@@ -170,7 +179,7 @@ export type TickerCorrectionRecord = {
 
 export type TickerCorrectionInput = Omit<
   TickerCorrectionRecord,
-  "correctExchange" | "notes" | "enabled"
+  'correctExchange' | 'notes' | 'enabled'
 > & {
   id?: string;
   correctExchange?: string | null;

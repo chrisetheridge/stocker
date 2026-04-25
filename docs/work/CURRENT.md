@@ -10,11 +10,11 @@ PLAN-003: Source Ingestion
 
 ## Active Task
 
-TASK-012: Define Source Adapter Interface
+TASK-016: Wire Source Refresh Job Handler
 
 ## Status
 
-Ready
+Review
 
 ## Agent Instructions
 
@@ -26,5 +26,5 @@ Ready
 - Read `docs/work/plans/PLAN-000-v1-master-work-plan.md`.
 - Read `docs/work/plans/PLAN-003-source-ingestion.md`.
 - PLAN-002 is complete and the active work has moved to PLAN-003.
-- Work only on `TASK-012` until it is complete.
-- Do not implement future roadmap items.
+- PLAN-003 source ingestion work is complete and ready for review.
+- Do not start new implementation work until the next active plan is set.

@@ -1,9 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import {
-  companyMatchStatusSchema,
-  relationshipTypeSchema,
-} from "./enums";
+import { companyMatchStatusSchema, relationshipTypeSchema } from './enums';
 
 const isoTimestampSchema = z.string().datetime({ offset: true });
 

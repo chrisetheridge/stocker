@@ -1,8 +1,8 @@
-import type { JobRecord, JobsRepository, JsonRecord } from "@stocker/db";
-import { ZodError } from "zod";
+import type { JobRecord, JobsRepository, JsonRecord } from '@stocker/db';
+import { ZodError } from 'zod';
 
-import type { JobType } from "../domain/enums";
-import type { JobHandlers } from "./job-handlers";
+import type { JobType } from '../domain/enums';
+import type { JobHandlers } from './job-handlers';
 import {
   jobPayloadSchemas,
   parseJobPayload,
@@ -10,7 +10,7 @@ import {
   type JobPayload,
   type SourceRefreshJobPayload,
   type StockRefreshJobPayload,
-} from "./job-payloads";
+} from './job-payloads';
 
 export type JobServiceDependencies = {
   readonly jobsRepository: JobsRepository;
@@ -23,15 +23,15 @@ export type EnqueueOptions = {
 };
 
 export type JobExecutionResult =
-  | { readonly status: "idle" }
-  | { readonly status: "succeeded"; readonly job: JobRecord }
+  | { readonly status: 'idle' }
+  | { readonly status: 'succeeded'; readonly job: JobRecord }
   | {
-      readonly status: "retry_scheduled";
+      readonly status: 'retry_scheduled';
       readonly job: JobRecord;
       readonly nextRunAfter: string;
     }
   | {
-      readonly status: "failed";
+      readonly status: 'failed';
       readonly job: JobRecord;
       readonly errorMessage: string;
     };
@@ -47,11 +47,11 @@ function formatErrorMessage(error: unknown): string {
     return error.message;
   }
 
-  return "Unknown job failure";
+  return 'Unknown job failure';
 }
 
 function zodErrorMessage(error: ZodError): string {
-  return error.issues.map((issue) => issue.message).join("; ");
+  return error.issues.map((issue) => issue.message).join('; ');
 }
 
 function nextAttemptCount(job: JobRecord): number {
@@ -63,17 +63,17 @@ export class JobService {
 
   async enqueueSourceRefresh(
     sourceId: string,
-    trigger: SourceRefreshJobPayload["trigger"],
+    trigger: SourceRefreshJobPayload['trigger'],
     options: EnqueueOptions = {},
   ): Promise<JobRecord> {
-    const payload = jobPayloadSchemas["source.refresh"].parse({
+    const payload = jobPayloadSchemas['source.refresh'].parse({
       sourceId,
       trigger,
     });
     const now = resolveNow(this.dependencies.now);
 
     return this.dependencies.jobsRepository.enqueue(
-      "source.refresh",
+      'source.refresh',
       payload as JsonRecord,
       {
         runAfter: options.runAfter,
@@ -86,17 +86,17 @@ export class JobService {
 
   async enqueueItemEnrichment(
     sourceItemId: string,
-    trigger: ItemEnrichJobPayload["trigger"],
+    trigger: ItemEnrichJobPayload['trigger'],
     options: EnqueueOptions = {},
   ): Promise<JobRecord> {
-    const payload = jobPayloadSchemas["item.enrich"].parse({
+    const payload = jobPayloadSchemas['item.enrich'].parse({
       sourceItemId,
       trigger,
     });
     const now = resolveNow(this.dependencies.now);
 
     return this.dependencies.jobsRepository.enqueue(
-      "item.enrich",
+      'item.enrich',
       payload as JsonRecord,
       {
         runAfter: options.runAfter,
@@ -110,10 +110,10 @@ export class JobService {
   async enqueueStockRefresh(
     sourceItemId: string,
     ticker: string,
-    trigger: StockRefreshJobPayload["trigger"],
+    trigger: StockRefreshJobPayload['trigger'],
     options: EnqueueOptions = {},
   ): Promise<JobRecord> {
-    const payload = jobPayloadSchemas["stock.refresh"].parse({
+    const payload = jobPayloadSchemas['stock.refresh'].parse({
       sourceItemId,
       ticker,
       trigger,
@@ -121,7 +121,7 @@ export class JobService {
     const now = resolveNow(this.dependencies.now);
 
     return this.dependencies.jobsRepository.enqueue(
-      "stock.refresh",
+      'stock.refresh',
       payload as JsonRecord,
       {
         runAfter: options.runAfter,
@@ -139,15 +139,19 @@ export class JobService {
     const now = resolveNow(this.dependencies.now);
     const job = await this.dependencies.jobsRepository.claimNext(workerId, now);
     if (!job) {
-      return { status: "idle" };
+      return { status: 'idle' };
     }
 
     const payloadResult = parseJobPayload(job.type, job.payload);
     if (!payloadResult.success) {
       const errorMessage = zodErrorMessage(payloadResult.error);
-      await this.dependencies.jobsRepository.markFailed(job.id, errorMessage, now);
+      await this.dependencies.jobsRepository.markFailed(
+        job.id,
+        errorMessage,
+        now,
+      );
       return {
-        status: "failed",
+        status: 'failed',
         job,
         errorMessage,
       };
@@ -160,7 +164,7 @@ export class JobService {
         now,
       );
       return {
-        status: "succeeded",
+        status: 'succeeded',
         job: completed ?? job,
       };
     } catch (error) {
@@ -175,7 +179,7 @@ export class JobService {
           now,
         );
         return {
-          status: "retry_scheduled",
+          status: 'retry_scheduled',
           job: retried ?? job,
           nextRunAfter,
         };
@@ -187,7 +191,7 @@ export class JobService {
         now,
       );
       return {
-        status: "failed",
+        status: 'failed',
         job: failed ?? job,
         errorMessage,
       };
@@ -199,17 +203,17 @@ export class JobService {
     payload: JobPayload,
     handlers: JobHandlers,
   ): Promise<void> {
-    if (type === "source.refresh") {
+    if (type === 'source.refresh') {
       await handlers.sourceRefresh(payload as SourceRefreshJobPayload);
       return;
     }
 
-    if (type === "item.enrich") {
+    if (type === 'item.enrich') {
       await handlers.itemEnrich(payload as ItemEnrichJobPayload);
       return;
     }
 
-    if (type === "stock.refresh") {
+    if (type === 'stock.refresh') {
       await handlers.stockRefresh(payload as StockRefreshJobPayload);
       return;
     }

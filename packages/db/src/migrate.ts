@@ -1,10 +1,10 @@
-import { migrate } from "drizzle-orm/libsql/migrator";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { migrate } from 'drizzle-orm/libsql/migrator';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { createDatabase, createDatabaseClient } from "./client";
+import { createDatabase, createDatabaseClient } from './client';
 
 export const migrationsFolder = fileURLToPath(
-  new URL("../migrations", import.meta.url),
+  new URL('../migrations', import.meta.url),
 );
 
 export type MigrateOptions = {
@@ -12,12 +12,14 @@ export type MigrateOptions = {
   migrationsFolder?: string;
 };
 
-export async function migrateDatabase(options: MigrateOptions = {}): Promise<void> {
+export async function migrateDatabase(
+  options: MigrateOptions = {},
+): Promise<void> {
   const databaseUrl =
     options.databaseUrl ??
     process.env.STOCKER_DATABASE_URL ??
     process.env.DATABASE_URL ??
-    "file:./stocker.sqlite";
+    'file:./stocker.sqlite';
 
   const client = createDatabaseClient(databaseUrl);
   try {
@@ -34,6 +36,9 @@ export async function main(): Promise<void> {
   await migrateDatabase();
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   await main();
 }

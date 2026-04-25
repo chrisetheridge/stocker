@@ -1,1 +1,1 @@
-export const uiPackageName = "@stocker/ui";
+export const uiPackageName = '@stocker/ui';

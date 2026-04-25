@@ -5,10 +5,15 @@ import {
   inArray,
   sql,
   type InferSelectModel,
-} from "drizzle-orm";
+} from 'drizzle-orm';
 
-import { sourceItems, itemCompanies, itemEnrichments, stockSnapshots } from "../schema";
-import type { Database } from "../client";
+import {
+  sourceItems,
+  itemCompanies,
+  itemEnrichments,
+  stockSnapshots,
+} from '../schema';
+import type { Database } from '../client';
 import type {
   InboxFilters,
   ItemDetailRecord,
@@ -17,13 +22,13 @@ import type {
   SourceItemUpsertInput,
   ItemEnrichmentRecord,
   StockSnapshotRecord,
-} from "../types";
+} from '../types';
 import {
   parseJsonRecord,
   stringifyJsonRecord,
   toNullableText,
   toNullableBoolean,
-} from "./helpers";
+} from './helpers';
 
 type SourceItemRow = InferSelectModel<typeof sourceItems>;
 type ItemCompanyRow = InferSelectModel<typeof itemCompanies>;
@@ -136,7 +141,9 @@ async function loadSnapshotsForCompanies(
 export class SourceItemsRepository {
   constructor(private readonly database: Database) {}
 
-  async upsertFromSource(input: SourceItemUpsertInput): Promise<SourceItemRecord> {
+  async upsertFromSource(
+    input: SourceItemUpsertInput,
+  ): Promise<SourceItemRecord> {
     const [row] = await this.database
       .insert(sourceItems)
       .values({
@@ -172,13 +179,15 @@ export class SourceItemsRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to upsert source item");
+      throw new Error('Failed to upsert source item');
     }
 
     return mapSourceItem(row);
   }
 
-  async listInboxItems(filters: InboxFilters = {}): Promise<ItemDetailRecord[]> {
+  async listInboxItems(
+    filters: InboxFilters = {},
+  ): Promise<ItemDetailRecord[]> {
     const matchingIds = await this.findMatchingItemIds(filters);
     if (matchingIds.length === 0) {
       return [];
@@ -190,12 +199,32 @@ export class SourceItemsRepository {
       .where(inArray(sourceItems.id, matchingIds))
       .orderBy(desc(sourceItems.fetchedAt), desc(sourceItems.createdAt));
 
-    const items = await Promise.all(rows.map((row) => this.loadItemDetail(row.id)));
+    const items = await Promise.all(
+      rows.map((row) => this.loadItemDetail(row.id)),
+    );
     return items.filter((item): item is ItemDetailRecord => Boolean(item));
   }
 
   async getItemDetail(itemId: string): Promise<ItemDetailRecord | null> {
     return this.loadItemDetail(itemId);
+  }
+
+  async findBySourceAndExternalId(
+    sourceId: string,
+    externalId: string,
+  ): Promise<SourceItemRecord | null> {
+    const [row] = await this.database
+      .select()
+      .from(sourceItems)
+      .where(
+        and(
+          eq(sourceItems.sourceId, sourceId),
+          eq(sourceItems.externalId, externalId),
+        ),
+      )
+      .limit(1);
+
+    return row ? mapSourceItem(row) : null;
   }
 
   async markReadState(
@@ -243,7 +272,9 @@ export class SourceItemsRepository {
     return row ? mapSourceItem(row) : null;
   }
 
-  private async loadItemDetail(itemId: string): Promise<ItemDetailRecord | null> {
+  private async loadItemDetail(
+    itemId: string,
+  ): Promise<ItemDetailRecord | null> {
     const [itemRow] = await this.database
       .select()
       .from(sourceItems)
@@ -277,9 +308,7 @@ export class SourceItemsRepository {
     };
   }
 
-  private async findMatchingItemIds(
-    filters: InboxFilters,
-  ): Promise<string[]> {
+  private async findMatchingItemIds(filters: InboxFilters): Promise<string[]> {
     const companyConditions = [];
 
     if (filters.ticker) {
@@ -299,13 +328,15 @@ export class SourceItemsRepository {
     if (filters.readState) {
       baseConditions.push(eq(sourceItems.readState, filters.readState));
     }
-    if (typeof filters.savedForResearch === "boolean") {
+    if (typeof filters.savedForResearch === 'boolean') {
       baseConditions.push(
         eq(sourceItems.savedForResearch, filters.savedForResearch),
       );
     }
     if (filters.enrichmentState) {
-      baseConditions.push(eq(sourceItems.enrichmentState, filters.enrichmentState));
+      baseConditions.push(
+        eq(sourceItems.enrichmentState, filters.enrichmentState),
+      );
     }
 
     let candidateIds: string[] | null = null;
@@ -327,7 +358,9 @@ export class SourceItemsRepository {
       }
     }
 
-    const conditions = candidateIds ? [inArray(sourceItems.id, candidateIds)] : [];
+    const conditions = candidateIds
+      ? [inArray(sourceItems.id, candidateIds)]
+      : [];
     conditions.push(...baseConditions);
 
     const orderBy = [
@@ -335,11 +368,9 @@ export class SourceItemsRepository {
       desc(sourceItems.createdAt),
     ] as const;
 
-    let rows:
-      | Array<{
-          id: string;
-        }>
-      = [];
+    let rows: Array<{
+      id: string;
+    }> = [];
 
     if (conditions.length === 0) {
       rows = await this.database

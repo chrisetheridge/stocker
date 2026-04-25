@@ -3,7 +3,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-10 px-6 py-16">
         <div className="max-w-3xl">
-          <p className="mb-3 text-sm uppercase tracking-[0.3em] text-sky-300">
+          <p className="mb-3 text-sm tracking-[0.3em] text-sky-300 uppercase">
             Stocker
           </p>
           <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">

@@ -1,10 +1,18 @@
-import { and, asc, desc, eq, lte, sql, type InferSelectModel } from "drizzle-orm";
-import { randomUUID } from "node:crypto";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  lte,
+  sql,
+  type InferSelectModel,
+} from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 
-import { jobs } from "../schema";
-import type { Database } from "../client";
-import type { JobEnqueueOptions, JobRecord, JsonRecord } from "../types";
-import { parseJsonRecord, stringifyJsonRecord } from "./helpers";
+import { jobs } from '../schema';
+import type { Database } from '../client';
+import type { JobEnqueueOptions, JobRecord, JsonRecord } from '../types';
+import { parseJsonRecord, stringifyJsonRecord } from './helpers';
 
 type JobRow = InferSelectModel<typeof jobs>;
 
@@ -39,7 +47,7 @@ export class JobsRepository {
       .values({
         id: options.id ?? randomUUID(),
         type,
-        state: "queued",
+        state: 'queued',
         payloadJson: stringifyJsonRecord(payload),
         attemptCount: 0,
         maxAttempts: options.maxAttempts ?? 3,
@@ -53,23 +61,20 @@ export class JobsRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to enqueue job");
+      throw new Error('Failed to enqueue job');
     }
 
     return mapJob(row);
   }
 
-  async claimNext(
-    workerId: string,
-    now: string,
-  ): Promise<JobRecord | null> {
+  async claimNext(workerId: string, now: string): Promise<JobRecord | null> {
     return this.database.transaction(async (transaction) => {
       const [nextJob] = await transaction
         .select()
         .from(jobs)
         .where(
           and(
-            eq(jobs.state, "queued"),
+            eq(jobs.state, 'queued'),
             lte(jobs.runAfter, now),
             sql`${jobs.attemptCount} < ${jobs.maxAttempts}`,
           ),
@@ -84,12 +89,12 @@ export class JobsRepository {
       const [claimed] = await transaction
         .update(jobs)
         .set({
-          state: "running",
+          state: 'running',
           lockedAt: now,
           lockedBy: workerId,
           updatedAt: now,
         })
-        .where(and(eq(jobs.id, nextJob.id), eq(jobs.state, "queued")))
+        .where(and(eq(jobs.id, nextJob.id), eq(jobs.state, 'queued')))
         .returning();
 
       return claimed ? mapJob(claimed) : null;
@@ -100,7 +105,7 @@ export class JobsRepository {
     const [row] = await this.database
       .update(jobs)
       .set({
-        state: "succeeded",
+        state: 'succeeded',
         lockedAt: null,
         lockedBy: null,
         lastErrorMessage: null,
@@ -120,7 +125,7 @@ export class JobsRepository {
     const [row] = await this.database
       .update(jobs)
       .set({
-        state: "failed",
+        state: 'failed',
         lockedAt: null,
         lockedBy: null,
         lastErrorMessage: errorMessage,
@@ -141,7 +146,7 @@ export class JobsRepository {
     const [row] = await this.database
       .update(jobs)
       .set({
-        state: "queued",
+        state: 'queued',
         attemptCount: sql`${jobs.attemptCount} + 1`,
         runAfter,
         lockedAt: null,

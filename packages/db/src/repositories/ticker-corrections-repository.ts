@@ -1,13 +1,10 @@
-import { eq, type InferSelectModel, sql } from "drizzle-orm";
-import { randomUUID } from "node:crypto";
+import { eq, type InferSelectModel, sql } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 
-import { tickerCorrections } from "../schema";
-import type { Database } from "../client";
-import type {
-  TickerCorrectionInput,
-  TickerCorrectionRecord,
-} from "../types";
-import { toNullableText } from "./helpers";
+import { tickerCorrections } from '../schema';
+import type { Database } from '../client';
+import type { TickerCorrectionInput, TickerCorrectionRecord } from '../types';
+import { toNullableText } from './helpers';
 
 type TickerCorrectionRow = InferSelectModel<typeof tickerCorrections>;
 
@@ -57,13 +54,15 @@ export class TickerCorrectionsRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to upsert ticker correction");
+      throw new Error('Failed to upsert ticker correction');
     }
 
     return mapCorrection(row);
   }
 
-  async disableCorrection(correctionId: string): Promise<TickerCorrectionRecord | null> {
+  async disableCorrection(
+    correctionId: string,
+  ): Promise<TickerCorrectionRecord | null> {
     const [row] = await this.database
       .update(tickerCorrections)
       .set({

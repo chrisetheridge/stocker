@@ -1,21 +1,21 @@
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { exampleConfig } from "./example-config";
-import { loadConfig } from "./load-config";
+import { exampleConfig } from './example-config';
+import { loadConfig } from './load-config';
 
 async function writeConfigFile(contents: string): Promise<string> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "stocker-config-"));
-  const filePath = path.join(tempDir, "stocker.yaml");
-  await fs.writeFile(filePath, contents, "utf8");
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-'));
+  const filePath = path.join(tempDir, 'stocker.yaml');
+  await fs.writeFile(filePath, contents, 'utf8');
   return filePath;
 }
 
-describe("loadConfig", () => {
-  it("loads a valid config", async () => {
+describe('loadConfig', () => {
+  it('loads a valid config', async () => {
     const filePath = await writeConfigFile(`
 app:
   databasePath: '.stocker/stocker.sqlite'
@@ -40,14 +40,14 @@ llm:
     const config = await loadConfig(filePath);
     expect(config.sources).toHaveLength(1);
     expect(config.sources[0]).toMatchObject({
-      id: "hacker-news",
+      id: 'hacker-news',
       enabled: true,
       refreshMinutes: 60,
     });
-    expect(config.market.defaultUniverse).toBe("US");
+    expect(config.market.defaultUniverse).toBe('US');
   });
 
-  it("rejects duplicate source ids", async () => {
+  it('rejects duplicate source ids', async () => {
     const filePath = await writeConfigFile(`
 sources:
   - id: hacker-news
@@ -74,7 +74,7 @@ llm:
     await expect(loadConfig(filePath)).rejects.toThrow(/Duplicate source id/);
   });
 
-  it("rejects an invalid source type", async () => {
+  it('rejects an invalid source type', async () => {
     const filePath = await writeConfigFile(`
 sources:
   - id: unknown-source
@@ -97,7 +97,7 @@ llm:
     await expect(loadConfig(filePath)).rejects.toThrow();
   });
 
-  it("rejects a missing llm model", async () => {
+  it('rejects a missing llm model', async () => {
     const filePath = await writeConfigFile(`
 sources: []
 market:
@@ -115,7 +115,7 @@ llm:
     await expect(loadConfig(filePath)).rejects.toThrow();
   });
 
-  it("applies defaults", async () => {
+  it('applies defaults', async () => {
     const filePath = await writeConfigFile(`
 market:
   provider:
@@ -131,12 +131,12 @@ llm:
 `);
 
     const config = await loadConfig(filePath);
-    expect(config.app.databasePath).toBe(".stocker/stocker.sqlite");
+    expect(config.app.databasePath).toBe('.stocker/stocker.sqlite');
     expect(config.sources).toEqual([]);
   });
 
-  it("matches the example config object", () => {
-    expect(exampleConfig.market.defaultUniverse).toBe("US");
+  it('matches the example config object', () => {
+    expect(exampleConfig.market.defaultUniverse).toBe('US');
     expect(exampleConfig.sources).toHaveLength(2);
   });
 });

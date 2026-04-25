@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { enrichmentStateSchema, itemReadStateSchema } from "./enums";
+import { enrichmentStateSchema, itemReadStateSchema } from './enums';
 
 const isoTimestampSchema = z.string().datetime({ offset: true });
 const jsonRecordSchema = z.record(z.string(), z.unknown());

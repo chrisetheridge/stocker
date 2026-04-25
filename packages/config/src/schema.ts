@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const sourceConfigTypes = ["rss", "reddit"] as const;
-export const marketProviderTypes = ["yahoo-finance2"] as const;
-export const llmProviderTypes = ["openai-compatible"] as const;
+export const sourceConfigTypes = ['rss', 'reddit'] as const;
+export const marketProviderTypes = ['yahoo-finance2'] as const;
+export const llmProviderTypes = ['openai-compatible'] as const;
 
 const sourceBaseSchema = z.object({
   id: z.string().min(1),
@@ -12,30 +12,30 @@ const sourceBaseSchema = z.object({
 });
 
 export const rssSourceConfigSchema = sourceBaseSchema.extend({
-  type: z.literal("rss"),
+  type: z.literal('rss'),
   url: z.string().url(),
 });
 
 export const redditSourceConfigSchema = sourceBaseSchema.extend({
-  type: z.literal("reddit"),
+  type: z.literal('reddit'),
   feedUrl: z.string().url(),
 });
 
-export const sourceConfigSchema = z.discriminatedUnion("type", [
+export const sourceConfigSchema = z.discriminatedUnion('type', [
   rssSourceConfigSchema,
   redditSourceConfigSchema,
 ]);
 
 export const marketConfigSchema = z.object({
-  defaultUniverse: z.string().min(1).default("US"),
+  defaultUniverse: z.string().min(1).default('US'),
   provider: z.object({
-    type: z.literal("yahoo-finance2"),
+    type: z.literal('yahoo-finance2'),
   }),
 });
 
 export const llmConfigSchema = z.object({
   provider: z.object({
-    type: z.literal("openai-compatible"),
+    type: z.literal('openai-compatible'),
     baseUrl: z.string().url(),
     apiKeyEnv: z.string().min(1),
     model: z.string().min(1),
@@ -46,7 +46,7 @@ export const llmConfigSchema = z.object({
 });
 
 export const appConfigSchema = z.object({
-  databasePath: z.string().min(1).default(".stocker/stocker.sqlite"),
+  databasePath: z.string().min(1).default('.stocker/stocker.sqlite'),
 });
 
 export const stockerConfigSchema = z
@@ -62,7 +62,7 @@ export const stockerConfigSchema = z
       if (seenIds.has(source.id)) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["sources", index, "id"],
+          path: ['sources', index, 'id'],
           message: `Duplicate source id: ${source.id}`,
         });
       }

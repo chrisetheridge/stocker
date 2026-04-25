@@ -70,12 +70,8 @@
           "name": "enrichment_runs_source_item_id_source_items_id_fk",
           "tableFrom": "enrichment_runs",
           "tableTo": "source_items",
-          "columnsFrom": [
-            "source_item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["source_item_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -175,16 +171,12 @@
       "indexes": {
         "item_companies_source_item_idx": {
           "name": "item_companies_source_item_idx",
-          "columns": [
-            "source_item_id"
-          ],
+          "columns": ["source_item_id"],
           "isUnique": false
         },
         "item_companies_ticker_idx": {
           "name": "item_companies_ticker_idx",
-          "columns": [
-            "ticker"
-          ],
+          "columns": ["ticker"],
           "isUnique": false
         }
       },
@@ -193,12 +185,8 @@
           "name": "item_companies_source_item_id_source_items_id_fk",
           "tableFrom": "item_companies",
           "tableTo": "source_items",
-          "columnsFrom": [
-            "source_item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["source_item_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -291,9 +279,7 @@
       "indexes": {
         "item_enrichments_source_item_unique": {
           "name": "item_enrichments_source_item_unique",
-          "columns": [
-            "source_item_id"
-          ],
+          "columns": ["source_item_id"],
           "isUnique": true
         }
       },
@@ -302,12 +288,8 @@
           "name": "item_enrichments_source_item_id_source_items_id_fk",
           "tableFrom": "item_enrichments",
           "tableTo": "source_items",
-          "columnsFrom": [
-            "source_item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["source_item_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -410,16 +392,12 @@
       "indexes": {
         "jobs_state_idx": {
           "name": "jobs_state_idx",
-          "columns": [
-            "state"
-          ],
+          "columns": ["state"],
           "isUnique": false
         },
         "jobs_run_after_idx": {
           "name": "jobs_run_after_idx",
-          "columns": [
-            "run_after"
-          ],
+          "columns": ["run_after"],
           "isUnique": false
         }
       },
@@ -543,38 +521,27 @@
       "indexes": {
         "source_items_source_external_unique": {
           "name": "source_items_source_external_unique",
-          "columns": [
-            "source_id",
-            "external_id"
-          ],
+          "columns": ["source_id", "external_id"],
           "isUnique": true
         },
         "source_items_enrichment_state_idx": {
           "name": "source_items_enrichment_state_idx",
-          "columns": [
-            "enrichment_state"
-          ],
+          "columns": ["enrichment_state"],
           "isUnique": false
         },
         "source_items_saved_for_research_idx": {
           "name": "source_items_saved_for_research_idx",
-          "columns": [
-            "saved_for_research"
-          ],
+          "columns": ["saved_for_research"],
           "isUnique": false
         },
         "source_items_read_state_idx": {
           "name": "source_items_read_state_idx",
-          "columns": [
-            "read_state"
-          ],
+          "columns": ["read_state"],
           "isUnique": false
         },
         "source_items_published_at_idx": {
           "name": "source_items_published_at_idx",
-          "columns": [
-            "published_at"
-          ],
+          "columns": ["published_at"],
           "isUnique": false
         }
       },
@@ -583,12 +550,8 @@
           "name": "source_items_source_id_sources_id_fk",
           "tableFrom": "source_items",
           "tableTo": "sources",
-          "columnsFrom": [
-            "source_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["source_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -682,9 +645,7 @@
       "indexes": {
         "sources_type_idx": {
           "name": "sources_type_idx",
-          "columns": [
-            "type"
-          ],
+          "columns": ["type"],
           "isUnique": false
         }
       },
@@ -805,9 +766,7 @@
       "indexes": {
         "stock_snapshots_ticker_idx": {
           "name": "stock_snapshots_ticker_idx",
-          "columns": [
-            "ticker"
-          ],
+          "columns": ["ticker"],
           "isUnique": false
         }
       },
@@ -880,11 +839,7 @@
       "indexes": {
         "ticker_corrections_unique": {
           "name": "ticker_corrections_unique",
-          "columns": [
-            "company_name",
-            "correct_ticker",
-            "correct_exchange"
-          ],
+          "columns": ["company_name", "correct_ticker", "correct_exchange"],
           "isUnique": true
         }
       },

@@ -1,13 +1,13 @@
-import { eq, type InferSelectModel } from "drizzle-orm";
+import { eq, type InferSelectModel } from 'drizzle-orm';
 
-import { sources } from "../schema";
-import type { Database } from "../client";
-import type { SourceRecord, SourceUpsertInput } from "../types";
+import { sources } from '../schema';
+import type { Database } from '../client';
+import type { SourceRecord, SourceUpsertInput } from '../types';
 import {
   parseJsonRecord,
   stringifyJsonRecord,
   toNullableText,
-} from "./helpers";
+} from './helpers';
 
 type SourceRow = InferSelectModel<typeof sources>;
 
@@ -30,7 +30,9 @@ function mapSource(row: SourceRow): SourceRecord {
 export class SourcesRepository {
   constructor(private readonly database: Database) {}
 
-  async upsertConfiguredSource(input: SourceUpsertInput): Promise<SourceRecord> {
+  async upsertConfiguredSource(
+    input: SourceUpsertInput,
+  ): Promise<SourceRecord> {
     const [row] = await this.database
       .insert(sources)
       .values({
@@ -63,7 +65,7 @@ export class SourcesRepository {
       .returning();
 
     if (!row) {
-      throw new Error("Failed to upsert configured source");
+      throw new Error('Failed to upsert configured source');
     }
 
     return mapSource(row);

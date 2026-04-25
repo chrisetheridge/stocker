@@ -1,7 +1,7 @@
-import type { StockerConfig } from "@stocker/config";
-import type { Database } from "@stocker/db";
-import type { JobService } from "@stocker/core";
-import type { JobHandlers } from "@stocker/core";
+import type { StockerConfig } from '@stocker/config';
+import type { Database } from '@stocker/db';
+import type { JobService } from '@stocker/core';
+import type { JobHandlers } from '@stocker/core';
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -16,7 +16,7 @@ export type WorkerRuntimeOptions = {
 };
 
 export type WorkerRuntime = WorkerRuntimeOptions & {
-  readonly runOnce: () => ReturnType<JobService["claimAndRunNextJob"]>;
+  readonly runOnce: () => ReturnType<JobService['claimAndRunNextJob']>;
   readonly runLoop: (signal?: AbortSignal) => Promise<void>;
 };
 

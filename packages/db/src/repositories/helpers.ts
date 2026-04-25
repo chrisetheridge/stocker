@@ -1,4 +1,4 @@
-import type { JsonRecord } from "../types";
+import type { JsonRecord } from '../types';
 
 export function parseJsonRecord(value: string): JsonRecord {
   if (value.trim().length === 0) {

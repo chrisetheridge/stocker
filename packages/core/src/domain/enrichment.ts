@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { enrichmentStateSchema } from "./enums";
+import { enrichmentStateSchema } from './enums';
 
 const isoTimestampSchema = z.string().datetime({ offset: true });
 

@@ -1,1 +1,1 @@
-export const llmPackageName = "@stocker/llm";
+export const llmPackageName = '@stocker/llm';
