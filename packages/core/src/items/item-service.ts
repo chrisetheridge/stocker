@@ -8,9 +8,9 @@ import type { JobService } from '../jobs/job-service';
 import type { ItemReadState } from '../domain/enums';
 
 export type ItemDetailViewRecord = ItemDetailRecord & {
-  readonly source: Awaited<
-    ReturnType<SourcesRepository['listSourceStatus']>
-  >[number] | null;
+  readonly source:
+    | Awaited<ReturnType<SourcesRepository['listSourceStatus']>>[number]
+    | null;
 };
 
 export type SourceEnrichmentRetryResult = {
@@ -25,7 +25,10 @@ const sourceEnrichmentBatchSize = 4;
 export type ItemServiceDependencies = {
   readonly sourceItemsRepository: Pick<
     SourceItemsRepository,
-    'getItemDetail' | 'listItemIdsBySourceId' | 'markReadState' | 'setSavedForResearch'
+    | 'getItemDetail'
+    | 'listItemIdsBySourceId'
+    | 'markReadState'
+    | 'setSavedForResearch'
   >;
   readonly sourcesRepository: Pick<SourcesRepository, 'listSourceStatus'>;
   readonly jobService: Pick<
@@ -47,7 +50,8 @@ export class ItemService {
       return null;
     }
 
-    const source = sources.find((entry) => entry.id === detail.item.sourceId) ?? null;
+    const source =
+      sources.find((entry) => entry.id === detail.item.sourceId) ?? null;
     return {
       ...detail,
       source,
@@ -67,7 +71,9 @@ export class ItemService {
   async setSavedForResearch(
     itemId: string,
     saved: boolean,
-  ): Promise<Awaited<ReturnType<SourceItemsRepository['setSavedForResearch']>>> {
+  ): Promise<
+    Awaited<ReturnType<SourceItemsRepository['setSavedForResearch']>>
+  > {
     return this.dependencies.sourceItemsRepository.setSavedForResearch(
       itemId,
       saved,
@@ -75,18 +81,14 @@ export class ItemService {
   }
 
   async retryEnrichment(itemId: string) {
-    const detail = await this.dependencies.sourceItemsRepository.getItemDetail(
-      itemId,
-    );
+    const detail =
+      await this.dependencies.sourceItemsRepository.getItemDetail(itemId);
 
     if (!detail) {
       throw new Error(`Item not found: ${itemId}`);
     }
 
-    return this.dependencies.jobService.enqueueItemEnrichment(
-      itemId,
-      'retry',
-    );
+    return this.dependencies.jobService.enqueueItemEnrichment(itemId, 'retry');
   }
 
   async retryEnrichmentForSource(
@@ -98,7 +100,11 @@ export class ItemService {
       );
 
     let jobsEnqueued = 0;
-    for (let index = 0; index < itemIds.length; index += sourceEnrichmentBatchSize) {
+    for (
+      let index = 0;
+      index < itemIds.length;
+      index += sourceEnrichmentBatchSize
+    ) {
       const batch = itemIds.slice(index, index + sourceEnrichmentBatchSize);
       const jobs = await Promise.all(
         batch.map((itemId) =>
@@ -117,9 +123,8 @@ export class ItemService {
   }
 
   async refreshStockDataForItem(itemId: string) {
-    const detail = await this.dependencies.sourceItemsRepository.getItemDetail(
-      itemId,
-    );
+    const detail =
+      await this.dependencies.sourceItemsRepository.getItemDetail(itemId);
 
     if (!detail) {
       throw new Error(`Item not found: ${itemId}`);

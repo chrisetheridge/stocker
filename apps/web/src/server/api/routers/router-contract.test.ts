@@ -13,14 +13,12 @@ describe("router contract", () => {
     const refreshStockDataForItem = vi.fn().mockResolvedValue([]);
     const listSourceStatus = vi.fn().mockResolvedValue([]);
     const refreshSource = vi.fn().mockResolvedValue({ status: "succeeded" });
-    const retryEnrichmentForSource = vi
-      .fn()
-      .mockResolvedValue({
-        sourceId: "source-1",
-        itemsFound: 0,
-        jobsEnqueued: 0,
-        batchSize: 4,
-      });
+    const retryEnrichmentForSource = vi.fn().mockResolvedValue({
+      sourceId: "source-1",
+      itemsFound: 0,
+      jobsEnqueued: 0,
+      batchSize: 4,
+    });
     const refreshAllEnabledSources = vi.fn().mockResolvedValue([]);
     const listCorrections = vi.fn().mockResolvedValue([]);
     const applyTickerCorrection = vi
@@ -99,10 +97,7 @@ describe("router contract", () => {
       query: "acme",
     });
     expect(retryEnrichment).toHaveBeenCalledWith("item-1");
-    expect(refreshSource).toHaveBeenCalledWith(
-      "source-1",
-      "manual",
-    );
+    expect(refreshSource).toHaveBeenCalledWith("source-1", "manual");
     expect(retryEnrichmentForSource).toHaveBeenCalledWith("source-1");
     expect(applyTickerCorrection).toHaveBeenCalledWith(
       "Acme",

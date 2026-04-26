@@ -124,7 +124,9 @@ export class SourcesRepository {
   }
 
   async listSourceStatus(): Promise<SourceRecord[]> {
-    const rows = await withSqliteBusyRetry(() => this.database.select().from(sources));
+    const rows = await withSqliteBusyRetry(() =>
+      this.database.select().from(sources),
+    );
     return rows.map(mapSource);
   }
 }

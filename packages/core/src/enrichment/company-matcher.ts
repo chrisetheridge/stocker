@@ -134,10 +134,11 @@ export class CompanyMatcher {
         continue;
       }
 
-      const searchResults = await this.dependencies.marketDataProvider.searchCompanies(
-        normalizedCompanyName,
-        universe,
-      );
+      const searchResults =
+        await this.dependencies.marketDataProvider.searchCompanies(
+          normalizedCompanyName,
+          universe,
+        );
       const exactMatch = searchResults.find(
         (result) =>
           normalizeForComparison(result.companyName) ===

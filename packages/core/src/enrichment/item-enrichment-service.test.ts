@@ -40,7 +40,9 @@ function createItem(): ItemDetailRecord {
   };
 }
 
-function createSnapshot(overrides: Partial<StockSnapshotRecord> = {}): StockSnapshotRecord {
+function createSnapshot(
+  overrides: Partial<StockSnapshotRecord> = {},
+): StockSnapshotRecord {
   return {
     id: 'snapshot-1',
     ticker: 'AAPL',
@@ -116,10 +118,7 @@ function createDependencies(options: {
   const sourceItemsRepository = {
     getItemDetail: async (itemId: string) =>
       item?.item.id === itemId ? item : null,
-    setEnrichmentState: async (
-      itemId: string,
-      enrichmentState: string,
-    ) => ({
+    setEnrichmentState: async (itemId: string, enrichmentState: string) => ({
       ...item.item,
       id: itemId,
       enrichmentState,

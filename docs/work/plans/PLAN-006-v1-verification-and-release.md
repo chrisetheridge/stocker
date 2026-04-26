@@ -18,7 +18,7 @@
 
 ## TASK-033: Add Local Development Documentation
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-032
 
@@ -67,9 +67,17 @@ pnpm typecheck
 - [ ] Run commands from the README on a clean install path or document the exact command that could not be run.
 - [ ] `rg -n "buy/sell/hold|portfolio tracking|full-text" README.md docs/LOCAL_DEVELOPMENT.md docs/CONFIGURATION.md` finds non-goal language.
 
+**Progress:**
+
+- [x] README and local-development docs created.
+- [x] Configuration docs cover RSS, Reddit, market provider, LLM provider, database path, and prompt override fields.
+- [x] Non-goal language is present in the docs.
+- [x] Verification commands executed: `pnpm --filter @stocker/db migrate`, `pnpm test`, `pnpm typecheck`.
+- [x] Long-running `web` and `worker` dev commands are documented for local use.
+
 ## TASK-034: Add Seed and Fixture Data for Local UI Testing
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-032
 
@@ -114,9 +122,16 @@ pnpm --filter @stocker/db test
 pnpm --filter @stocker/db seed:dev
 ```
 
+**Progress:**
+
+- [x] Deterministic seed data added.
+- [x] `pnpm --filter @stocker/db seed:dev` is idempotent.
+- [x] Seed test covers duplicate execution.
+- [x] Seed command verified with local sample database.
+
 ## TASK-035: Add End-to-End Manual Verification Script
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-034
 
@@ -176,9 +191,15 @@ Expected:
 All automated checks pass.
 ```
 
+**Progress:**
+
+- [x] Release-gate script added.
+- [x] Acceptance and scope checklists added.
+- [x] Script verified end to end.
+
 ## TASK-036: Verify Worker and Job Recovery Behavior
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-023, TASK-035
 
@@ -210,9 +231,15 @@ pnpm --filter @stocker/core test
 pnpm --filter @stocker/core typecheck
 ```
 
+**Progress:**
+
+- [x] Stale running job recovery test added.
+- [x] Queued, retryable, terminal, and invalid payload recovery scenarios covered.
+- [x] Worker/job recovery behavior verified via core tests.
+
 ## TASK-037: Verify No Out-of-Scope Feature Drift
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-035
 
@@ -253,9 +280,15 @@ rg -n "buy|sell|hold|recommendation|portfolio|position|shares|cost basis|alert|n
 
 - [ ] Run the search command and update `V1_SCOPE_GUARDRAILS.md` with results.
 
+**Progress:**
+
+- [x] Search command run against `apps`, `packages`, and `docs`.
+- [x] Hits reviewed and documented as safe references or future-work notes.
+- [x] No product code implements out-of-scope features.
+
 ## TASK-038: Finalize Work Tracking for v1.0 Completion
 
-**Status:** Ready
+**Status:** Review
 
 **Dependencies:** TASK-037
 
@@ -287,6 +320,12 @@ rg -n "buy|sell|hold|recommendation|portfolio|position|shares|cost basis|alert|n
 ```bash
 rg -n "Active Plan|Active Task|Status|v1.1|v1.2" docs/work
 ```
+
+**Progress:**
+
+- [x] Work-tracking docs updated for PLAN-006.
+- [x] Completion notes capture automated verification results.
+- [ ] Manual browser checks still need signoff before v1.0 can move to Done.
 
 ## Final v1.0 Verification Gate
 

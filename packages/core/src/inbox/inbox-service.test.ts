@@ -7,17 +7,17 @@ describe('InboxService', () => {
     const listInboxItems = vi.fn().mockResolvedValue([]);
     const listSourceStatus = vi.fn().mockResolvedValue([
       {
-        id: "source-1",
-        type: "rss",
-        name: "Hacker News",
+        id: 'source-1',
+        type: 'rss',
+        name: 'Hacker News',
         enabled: true,
         config: {},
         lastFetchedAt: null,
         lastSuccessAt: null,
         lastErrorAt: null,
         lastErrorMessage: null,
-        createdAt: "2026-04-25T12:00:00.000Z",
-        updatedAt: "2026-04-25T12:00:00.000Z",
+        createdAt: '2026-04-25T12:00:00.000Z',
+        updatedAt: '2026-04-25T12:00:00.000Z',
       },
     ]);
     const service = createInboxService({

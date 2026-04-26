@@ -1,13 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import type { TickerCorrectionRecord } from '@stocker/db';
 import type {
-  TickerCorrectionRecord,
-} from '@stocker/db';
-import type { CompanySearchResult, StockSnapshotInput } from '@stocker/market-data';
+  CompanySearchResult,
+  StockSnapshotInput,
+} from '@stocker/market-data';
 
 import { createCompanyMatcher } from './company-matcher';
 
-function createCorrection(overrides: Partial<TickerCorrectionRecord> = {}): TickerCorrectionRecord {
+function createCorrection(
+  overrides: Partial<TickerCorrectionRecord> = {},
+): TickerCorrectionRecord {
   return {
     id: 'correction-1',
     companyName: 'Apple Inc.',
@@ -21,7 +24,9 @@ function createCorrection(overrides: Partial<TickerCorrectionRecord> = {}): Tick
   };
 }
 
-function createSnapshot(overrides: Partial<StockSnapshotInput> = {}): StockSnapshotInput {
+function createSnapshot(
+  overrides: Partial<StockSnapshotInput> = {},
+): StockSnapshotInput {
   return {
     ticker: 'AAPL',
     exchange: 'NASDAQ',
@@ -45,10 +50,12 @@ function createDependencies(options: {
   searchResults?: CompanySearchResult[];
   snapshot?: StockSnapshotInput | null;
 }) {
-  const findEnabledCorrection = vi.fn().mockResolvedValue(
-    options.correction ?? null,
-  );
-  const searchCompanies = vi.fn().mockResolvedValue(options.searchResults ?? []);
+  const findEnabledCorrection = vi
+    .fn()
+    .mockResolvedValue(options.correction ?? null);
+  const searchCompanies = vi
+    .fn()
+    .mockResolvedValue(options.searchResults ?? []);
   const getSnapshot = vi.fn().mockResolvedValue(options.snapshot ?? null);
 
   const matcher = createCompanyMatcher({

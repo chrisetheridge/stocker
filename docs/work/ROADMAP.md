@@ -4,6 +4,8 @@
 
 v1.0: Intelligence Inbox
 
+v1.0 release work is complete and in review while manual browser checks finish.
+
 ## Active Epic
 
 - `epics/EPIC-001-v1-intelligence-inbox.md`

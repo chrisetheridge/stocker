@@ -1,11 +1,8 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
-import { loadConfigFromEnv } from "@stocker/config";
-import {
-  createAppServices,
-  type AppServices,
-} from "@stocker/core";
+import { loadConfigFromEnv } from '@stocker/config';
+import { createAppServices, type AppServices } from '@stocker/core';
 import {
   createDatabase,
   createDatabaseClient,
@@ -15,18 +12,18 @@ import {
   createSourcesRepository,
   createStockSnapshotsRepository,
   createTickerCorrectionsRepository,
-} from "@stocker/db";
-import { migrateDatabase } from "@stocker/db/migrate";
+} from '@stocker/db';
+import { migrateDatabase } from '@stocker/db/migrate';
 import {
   createMarketDataProviderRegistry,
   createYahooFinanceMarketDataProvider,
-} from "@stocker/market-data";
-import { createOpenAiCompatibleLlmProvider } from "@stocker/llm";
+} from '@stocker/market-data';
+import { createOpenAiCompatibleLlmProvider } from '@stocker/llm';
 import {
   createSourceAdapterRegistry,
   redditAdapter,
   rssAdapter,
-} from "@stocker/source-adapters";
+} from '@stocker/source-adapters';
 
 export type WorkerServicesBundle = {
   config: Awaited<ReturnType<typeof loadConfigFromEnv>>;
@@ -40,7 +37,7 @@ async function resolveWorkspaceRoot(startDir = process.cwd()): Promise<string> {
 
   for (;;) {
     try {
-      await fs.access(path.join(currentDir, "pnpm-workspace.yaml"));
+      await fs.access(path.join(currentDir, 'pnpm-workspace.yaml'));
       return currentDir;
     } catch {
       const parentDir = path.dirname(currentDir);
@@ -54,7 +51,7 @@ async function resolveWorkspaceRoot(startDir = process.cwd()): Promise<string> {
 }
 
 function toDatabaseUrl(databasePath: string, workspaceRoot: string): string {
-  if (databasePath.startsWith("file:")) {
+  if (databasePath.startsWith('file:')) {
     return databasePath;
   }
 
@@ -75,7 +72,8 @@ export async function createWorkerServicesBundle(): Promise<WorkerServicesBundle
   const sourceItemsRepository = createSourceItemsRepository(database);
   const enrichmentRepository = createEnrichmentRepository(database);
   const stockSnapshotsRepository = createStockSnapshotsRepository(database);
-  const tickerCorrectionsRepository = createTickerCorrectionsRepository(database);
+  const tickerCorrectionsRepository =
+    createTickerCorrectionsRepository(database);
 
   for (const source of config.sources) {
     await sourcesRepository.upsertConfiguredSource({
@@ -92,7 +90,10 @@ export async function createWorkerServicesBundle(): Promise<WorkerServicesBundle
   const marketDataProviderRegistry = createMarketDataProviderRegistry([
     createYahooFinanceMarketDataProvider(),
   ]);
-  const sourceAdapters = createSourceAdapterRegistry([rssAdapter, redditAdapter]);
+  const sourceAdapters = createSourceAdapterRegistry([
+    rssAdapter,
+    redditAdapter,
+  ]);
   const llmProvider = createOpenAiCompatibleLlmProvider({
     baseURL: config.llm.provider.baseUrl,
     apiKey: process.env[config.llm.provider.apiKeyEnv],

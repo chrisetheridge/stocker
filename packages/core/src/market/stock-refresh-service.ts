@@ -40,10 +40,7 @@ export type StockRefreshResult =
   | StockRefreshFailed;
 
 export type StockRefreshServiceDependencies = {
-  readonly sourceItemsRepository?: Pick<
-    SourceItemsRepository,
-    'getItemDetail'
-  >;
+  readonly sourceItemsRepository?: Pick<SourceItemsRepository, 'getItemDetail'>;
   readonly stockSnapshotsRepository: Pick<
     StockSnapshotsRepository,
     'insertSnapshot' | 'getLatestSnapshot'
@@ -60,7 +57,9 @@ function resolveNow(now?: () => string): string {
 }
 
 function formatErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Unknown stock refresh failure';
+  return error instanceof Error
+    ? error.message
+    : 'Unknown stock refresh failure';
 }
 
 function toStoredSnapshot(
@@ -92,9 +91,10 @@ export class StockRefreshService {
       });
 
       if (snapshot) {
-        const stored = await this.dependencies.stockSnapshotsRepository.insertSnapshot(
-          toStoredSnapshot(snapshot, now),
-        );
+        const stored =
+          await this.dependencies.stockSnapshotsRepository.insertSnapshot(
+            toStoredSnapshot(snapshot, now),
+          );
 
         return {
           status: 'succeeded',

@@ -25,20 +25,25 @@ export function InboxItemCard({
   onToggleSaved: () => void;
 }) {
   const sourceName = item.source?.name ?? item.item.sourceId;
-  const summary = item.item.summary ?? item.enrichment?.summary ?? "No summary available";
+  const summary =
+    item.item.summary ?? item.enrichment?.summary ?? "No summary available";
 
   return (
     <Card>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <EnrichmentStateBadge state={toEnrichmentState(item.item.enrichmentState)} />
-            {item.item.savedForResearch ? <Badge tone="info">Saved</Badge> : null}
+            <EnrichmentStateBadge
+              state={toEnrichmentState(item.item.enrichmentState)}
+            />
+            {item.item.savedForResearch ? (
+              <Badge tone="info">Saved</Badge>
+            ) : null}
             <Badge tone="muted">{sourceName}</Badge>
           </div>
           <Link
             href={`/items/${item.item.id}`}
-            className="text-lg font-semibold leading-tight text-slate-50 transition-colors hover:text-amber-200"
+            className="text-lg leading-tight font-semibold text-slate-50 transition-colors hover:text-amber-200"
           >
             {item.item.title}
           </Link>
@@ -56,7 +61,7 @@ export function InboxItemCard({
             href={item.item.canonicalUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-xl bg-white/8 px-3 py-2 text-sm font-medium text-slate-100 ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/12"
+            className="inline-flex items-center justify-center rounded-xl bg-white/8 px-3 py-2 text-sm font-medium text-slate-100 ring-1 ring-white/10 transition-colors ring-inset hover:bg-white/12"
           >
             Open original
           </a>

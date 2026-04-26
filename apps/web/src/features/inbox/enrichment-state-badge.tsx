@@ -10,11 +10,7 @@ function normalizeState(state: string): keyof typeof stateLabels {
   return state === "pending" || state === "failed" ? state : "complete";
 }
 
-export function EnrichmentStateBadge({
-  state,
-}: {
-  state: string;
-}) {
+export function EnrichmentStateBadge({ state }: { state: string }) {
   const meta = stateLabels[normalizeState(state)];
   return <Badge tone={meta.tone}>{meta.label}</Badge>;
 }

@@ -5,9 +5,7 @@ import { createInboxService } from '../inbox/inbox-service';
 import { createItemService } from '../items/item-service';
 import { createJobService } from '../jobs/job-service';
 import { createStockRefreshService } from '../market/stock-refresh-service';
-import {
-  createSourceRefreshService,
-} from '../sources/source-refresh-service';
+import { createSourceRefreshService } from '../sources/source-refresh-service';
 import { createSourceStatusService } from '../sources/source-status-service';
 import type { AppServices, AppServicesDependencies } from './app-services';
 

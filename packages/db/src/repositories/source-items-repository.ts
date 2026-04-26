@@ -437,7 +437,8 @@ export class SourceItemsRepository {
       return [];
     }
 
-    const conditions = candidateIds.size > 0 ? [inArray(sourceItems.id, [...candidateIds])] : [];
+    const conditions =
+      candidateIds.size > 0 ? [inArray(sourceItems.id, [...candidateIds])] : [];
     conditions.push(...baseConditions);
 
     const orderBy = [

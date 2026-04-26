@@ -25,9 +25,13 @@ export function CompanyCard({
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone="success">Validated</Badge>
           <Badge tone="muted">{company.relationshipType}</Badge>
-          <Badge tone="muted">Confidence {Math.round(company.confidence * 100)}%</Badge>
+          <Badge tone="muted">
+            Confidence {Math.round(company.confidence * 100)}%
+          </Badge>
         </div>
-        <h3 className="text-base font-semibold text-slate-50">{company.companyName}</h3>
+        <h3 className="text-base font-semibold text-slate-50">
+          {company.companyName}
+        </h3>
       </CardHeader>
       <CardBody className="space-y-4">
         <p className="text-sm leading-6 text-slate-300">

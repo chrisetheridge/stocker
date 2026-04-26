@@ -20,7 +20,7 @@ export function InboxFilters({
   return (
     <div className="grid gap-3 lg:grid-cols-3">
       <label className="space-y-2">
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+        <span className="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase">
           Source
         </span>
         <Input
@@ -36,7 +36,7 @@ export function InboxFilters({
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+        <span className="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase">
           Company or ticker
         </span>
         <Input
@@ -53,7 +53,7 @@ export function InboxFilters({
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+        <span className="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase">
           Query
         </span>
         <Input
@@ -69,7 +69,7 @@ export function InboxFilters({
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+        <span className="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase">
           Read state
         </span>
         <Select
@@ -90,7 +90,7 @@ export function InboxFilters({
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+        <span className="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase">
           Saved
         </span>
         <Select
@@ -118,7 +118,7 @@ export function InboxFilters({
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+        <span className="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase">
           Enrichment
         </span>
         <Select

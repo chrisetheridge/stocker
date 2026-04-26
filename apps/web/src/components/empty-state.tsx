@@ -17,7 +17,15 @@ export function EmptyState({
     <Card>
       <CardBody className="space-y-4 text-center">
         <div className="flex justify-center">
-          <Badge tone={tone === "warning" ? "warning" : tone === "info" ? "info" : "muted"}>
+          <Badge
+            tone={
+              tone === "warning"
+                ? "warning"
+                : tone === "info"
+                  ? "info"
+                  : "muted"
+            }
+          >
             Empty state
           </Badge>
         </div>

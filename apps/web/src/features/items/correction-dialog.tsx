@@ -25,7 +25,11 @@ export function CorrectionDialog({
 
   return (
     <div className="space-y-2">
-      <Button type="button" variant="ghost" onClick={() => setOpen((value) => !value)}>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => setOpen((value) => !value)}
+      >
         Correct match
       </Button>
 
@@ -44,7 +48,7 @@ export function CorrectionDialog({
           }}
         >
           <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <p className="text-xs tracking-[0.2em] text-slate-400 uppercase">
               Company
             </p>
             <p className="text-sm font-medium text-slate-100">{companyName}</p>
@@ -66,7 +70,11 @@ export function CorrectionDialog({
           />
           <div className="flex items-center gap-2">
             <Button type="submit">Apply correction</Button>
-            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
           </div>

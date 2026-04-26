@@ -31,5 +31,7 @@ export type LlmProvider = {
   readonly providerName?: string;
   readonly modelName?: string;
   readonly promptVersion?: string;
-  extractStockRelevance(input: EnrichmentPromptInput): Promise<EnrichmentOutput>;
+  extractStockRelevance(
+    input: EnrichmentPromptInput,
+  ): Promise<EnrichmentOutput>;
 };

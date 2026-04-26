@@ -32,7 +32,10 @@ function readNumber(
   return undefined;
 }
 
-function normalizeConfidence(candidate: Record<string, unknown>, query: string) {
+function normalizeConfidence(
+  candidate: Record<string, unknown>,
+  query: string,
+) {
   const rawScore = readNumber(candidate, ['score']);
   if (typeof rawScore === 'number') {
     return rawScore > 1 ? Math.min(rawScore / 100, 1) : rawScore;
@@ -95,9 +98,15 @@ function isEquityLike(candidate: Record<string, unknown>): boolean {
   return quoteType.toLowerCase() === 'equity';
 }
 
-function readQuoteSummarySector(summary: Record<string, unknown>): string | undefined {
+function readQuoteSummarySector(
+  summary: Record<string, unknown>,
+): string | undefined {
   const assetProfile = summary.assetProfile;
-  if (assetProfile && typeof assetProfile === 'object' && assetProfile !== null) {
+  if (
+    assetProfile &&
+    typeof assetProfile === 'object' &&
+    assetProfile !== null
+  ) {
     const sector = (assetProfile as Record<string, unknown>).sector;
     if (typeof sector === 'string' && sector.trim().length > 0) {
       return sector;
@@ -118,7 +127,11 @@ export function normalizeSnapshot(
   }
 
   const ticker = readString(quote, ['symbol']) ?? input.ticker;
-  const companyName = readString(quote, ['longName', 'shortName', 'displayName']);
+  const companyName = readString(quote, [
+    'longName',
+    'shortName',
+    'displayName',
+  ]);
   const exchange = readString(quote, ['exchange', 'fullExchangeName']);
   const sector = readQuoteSummarySector(summary ?? {});
 

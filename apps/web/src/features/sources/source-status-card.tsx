@@ -57,25 +57,25 @@ export function SourceStatusCard({
       </CardHeader>
       <CardBody className="grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          <p className="text-xs tracking-[0.2em] text-slate-400 uppercase">
             Last fetched
           </p>
           <p>{formatTimestamp(source.lastFetchedAt)}</p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          <p className="text-xs tracking-[0.2em] text-slate-400 uppercase">
             Last success
           </p>
           <p>{formatTimestamp(source.lastSuccessAt)}</p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          <p className="text-xs tracking-[0.2em] text-slate-400 uppercase">
             Last error
           </p>
           <p>{formatTimestamp(source.lastErrorAt)}</p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          <p className="text-xs tracking-[0.2em] text-slate-400 uppercase">
             Last error message
           </p>
           <p className="text-slate-100">{source.lastErrorMessage ?? "None"}</p>

@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-import {
-  enrichmentStateSchema,
-  itemReadStateSchema,
-} from "@stocker/core";
+import { enrichmentStateSchema, itemReadStateSchema } from "@stocker/core";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -20,7 +17,9 @@ const inboxFiltersSchema = z.object({
 });
 
 export const inboxRouter = createTRPCRouter({
-  list: publicProcedure.input(inboxFiltersSchema).query(async ({ ctx, input }) => {
-    return ctx.services.inboxService.listInboxItems(input);
-  }),
+  list: publicProcedure
+    .input(inboxFiltersSchema)
+    .query(async ({ ctx, input }) => {
+      return ctx.services.inboxService.listInboxItems(input);
+    }),
 });

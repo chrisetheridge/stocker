@@ -4,7 +4,9 @@ import type { TickerCorrectionRecord } from '@stocker/db';
 
 import { createCorrectionService } from './correction-service';
 
-function createCorrection(overrides: Partial<TickerCorrectionRecord> = {}): TickerCorrectionRecord {
+function createCorrection(
+  overrides: Partial<TickerCorrectionRecord> = {},
+): TickerCorrectionRecord {
   return {
     id: 'correction-1',
     companyName: 'Apple Inc.',
@@ -20,18 +22,18 @@ function createCorrection(overrides: Partial<TickerCorrectionRecord> = {}): Tick
 
 function createDependencies() {
   const corrections: TickerCorrectionRecord[] = [];
-    const tickerCorrectionsRepository = {
-      listCorrections: async () => corrections,
-      upsertCorrection: async (input: {
-        id?: string;
-        companyName: string;
-        correctTicker: string;
-        correctExchange?: string | null;
-        notes?: string | null;
-        enabled?: boolean;
-        createdAt: string;
-        updatedAt: string;
-      }) => {
+  const tickerCorrectionsRepository = {
+    listCorrections: async () => corrections,
+    upsertCorrection: async (input: {
+      id?: string;
+      companyName: string;
+      correctTicker: string;
+      correctExchange?: string | null;
+      notes?: string | null;
+      enabled?: boolean;
+      createdAt: string;
+      updatedAt: string;
+    }) => {
       const next = createCorrection({
         id: input.id ?? 'correction-1',
         companyName: input.companyName,

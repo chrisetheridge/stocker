@@ -6,11 +6,11 @@ EPIC-001: v1 Intelligence Inbox
 
 ## Active Plan
 
-PLAN-005: Web API and UI
+PLAN-006: v1 Verification and Release
 
 ## Active Task
 
-TASK-032: Add Empty, Loading, and Error States
+TASK-038: Finalize Work Tracking for v1.0 Completion
 
 ## Status
 
@@ -24,11 +24,11 @@ Review
 - Read `docs/STACK.md`.
 - Read `docs/work/epics/EPIC-001-v1-intelligence-inbox.md`.
 - Read `docs/work/plans/PLAN-000-v1-master-work-plan.md`.
-- Read `docs/work/plans/PLAN-003-source-ingestion.md`.
-- Read `docs/work/plans/PLAN-004-market-llm-and-enrichment.md`.
 - Read `docs/work/plans/PLAN-005-web-api-and-ui.md`.
+- Read `docs/work/plans/PLAN-006-v1-verification-and-release.md`.
 - PLAN-002 is complete and the active work has moved to PLAN-003.
 - PLAN-003 source ingestion work is complete and verified.
 - PLAN-004 market, LLM, and enrichment work is implemented and verified.
 - PLAN-005 web API and UI work is complete and ready for review.
-- Do not start PLAN-006 until review is complete or the user explicitly asks.
+- PLAN-006 is the active release-gate work. Complete tasks 033 through 038 in order.
+- PLAN-006 implementation is complete. Finalize verification notes and review status before marking v1.0 done.

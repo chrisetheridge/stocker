@@ -120,7 +120,11 @@ function normalizeRedditItem(
         entryId,
         subreddit:
           feedType === 'atom'
-            ? readText((item.category as Record<string, unknown> | undefined)?.['@_label'])
+            ? readText(
+                (item.category as Record<string, unknown> | undefined)?.[
+                  '@_label'
+                ],
+              )
             : readText(item.category),
         score: parseScore(item),
         commentsUrl: readText(item.comments) ?? undefined,

@@ -20,8 +20,6 @@ export const sourcesRouter = createTRPCRouter({
       return ctx.services.itemService.retryEnrichmentForSource(input.sourceId);
     }),
   refreshAll: publicProcedure.mutation(async ({ ctx }) => {
-    return ctx.services.sourceRefreshService.refreshAllEnabledSources(
-      "manual",
-    );
+    return ctx.services.sourceRefreshService.refreshAllEnabledSources("manual");
   }),
 });

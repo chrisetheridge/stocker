@@ -10,6 +10,7 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@libsql/client": "^0.14.0",
+    "@stocker/config": "workspace:*",
     "drizzle-orm": "^0.41.0"
   },
   "devDependencies": {
@@ -18,7 +19,9 @@
   },
   "scripts": {
     "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+    "migrate": "tsx src/migrate.ts",
     "db:migrate": "tsx src/migrate.ts",
+    "seed:dev": "tsx src/seed/seed-dev.ts",
     "lint": "eslint src",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit"

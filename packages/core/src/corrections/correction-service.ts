@@ -58,7 +58,9 @@ export class CorrectionService {
       updatedAt: now,
     };
 
-    return this.dependencies.tickerCorrectionsRepository.upsertCorrection(input);
+    return this.dependencies.tickerCorrectionsRepository.upsertCorrection(
+      input,
+    );
   }
 
   async removeTickerCorrection(

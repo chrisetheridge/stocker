@@ -55,7 +55,7 @@ export function SourceStatusScreen() {
     <div className="space-y-6">
       <Card>
         <CardHeader className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200">
+          <p className="text-xs font-semibold tracking-[0.3em] text-amber-200 uppercase">
             Sources
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-slate-50">

@@ -20,6 +20,8 @@ import {
 
 type JobRow = InferSelectModel<typeof jobs>;
 
+const staleLockWindowMs = 15 * 60 * 1000;
+
 function mapJob(row: JobRow): JobRecord {
   return {
     id: row.id,
@@ -89,7 +91,27 @@ export class JobsRepository {
           .orderBy(asc(jobs.runAfter), asc(jobs.createdAt))
           .limit(1);
 
-        if (!nextJob) {
+        let jobToClaim = nextJob ?? null;
+        if (!jobToClaim) {
+          const staleCutoff = new Date(
+            new Date(now).getTime() - staleLockWindowMs,
+          ).toISOString();
+          const [staleJob] = await transaction
+            .select()
+            .from(jobs)
+            .where(
+              and(
+                eq(jobs.state, 'running'),
+                lte(jobs.lockedAt, staleCutoff),
+                sql`${jobs.attemptCount} < ${jobs.maxAttempts}`,
+              ),
+            )
+            .orderBy(asc(jobs.lockedAt), asc(jobs.createdAt))
+            .limit(1);
+          jobToClaim = staleJob ?? null;
+        }
+
+        if (!jobToClaim) {
           return null;
         }
 
@@ -101,7 +123,7 @@ export class JobsRepository {
             lockedBy: workerId,
             updatedAt: now,
           })
-          .where(and(eq(jobs.id, nextJob.id), eq(jobs.state, 'queued')))
+          .where(eq(jobs.id, jobToClaim.id))
           .returning();
 
         return claimed ? mapJob(claimed) : null;

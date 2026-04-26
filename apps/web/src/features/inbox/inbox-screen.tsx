@@ -44,7 +44,7 @@ export function InboxScreen() {
     <div className="space-y-6">
       <Card>
         <CardHeader className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200">
+          <p className="text-xs font-semibold tracking-[0.3em] text-amber-200 uppercase">
             Inbox
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-slate-50">
@@ -75,7 +75,9 @@ export function InboxScreen() {
         />
       ) : items.length === 0 ? (
         <EmptyState
-          title={activeFilters ? "No items match these filters" : "Inbox is empty"}
+          title={
+            activeFilters ? "No items match these filters" : "Inbox is empty"
+          }
           description={
             activeFilters
               ? "Clear filters to see every configured source item."

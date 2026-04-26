@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Review
 
 ## Product References
 
@@ -109,6 +109,6 @@ These are not part of this epic unless explicitly promoted later.
 
 ## Open Questions
 
-- Implementation has not started.
-- Exact scaffold versions will be recorded in `docs/work/decisions/ADR-002-project-scaffold.md` during TASK-005.
-- Source adapter, LLM provider, market-data provider, and job contracts are specified in the plan files and will be finalized in code during implementation.
+- v1.0 implementation is complete and moving through verification and release notes.
+- Final release signoff depends on the checklist and verification evidence recorded in `docs/work/checklists/`.
+- Any follow-on scope stays in `docs/FUTURE.md` until promoted into active work.

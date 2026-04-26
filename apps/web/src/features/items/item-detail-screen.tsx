@@ -32,7 +32,7 @@ export function ItemDetailView({
     exchange?: string;
     notes?: string;
   }) => Promise<void> | void;
-  }) {
+}) {
   const snapshotByTicker = new Map(
     detail.snapshots.map((snapshot) => [snapshot.ticker, snapshot]),
   );
@@ -48,7 +48,9 @@ export function ItemDetailView({
       <Card>
         <CardHeader className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="muted">{detail.source?.name ?? detail.item.sourceId}</Badge>
+            <Badge tone="muted">
+              {detail.source?.name ?? detail.item.sourceId}
+            </Badge>
             <Badge tone="muted">{detail.item.readState}</Badge>
             <Badge
               tone={
@@ -68,7 +70,9 @@ export function ItemDetailView({
                 {detail.item.title}
               </h1>
               <p className="text-sm text-slate-400">
-                {formatTimestamp(detail.item.publishedAt ?? detail.item.fetchedAt)}
+                {formatTimestamp(
+                  detail.item.publishedAt ?? detail.item.fetchedAt,
+                )}
               </p>
             </div>
             <ExternalLinkButton href={detail.item.canonicalUrl}>
@@ -78,7 +82,9 @@ export function ItemDetailView({
         </CardHeader>
         <CardBody className="space-y-4">
           <p className="max-w-4xl text-sm leading-7 text-slate-300">
-            {detail.item.summary ?? detail.enrichment?.summary ?? "No summary available."}
+            {detail.item.summary ??
+              detail.enrichment?.summary ??
+              "No summary available."}
           </p>
           <EnrichmentActions
             saved={detail.item.savedForResearch}
@@ -92,7 +98,8 @@ export function ItemDetailView({
               {detail.enrichment.errorMessage}
             </div>
           ) : null}
-          {detail.item.sourceMetadata && Object.keys(detail.item.sourceMetadata).length > 0 ? (
+          {detail.item.sourceMetadata &&
+          Object.keys(detail.item.sourceMetadata).length > 0 ? (
             <details className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <summary className="cursor-pointer text-sm font-medium text-slate-200">
                 Source metadata
@@ -107,13 +114,17 @@ export function ItemDetailView({
 
       {detail.companies.length > 0 ? (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-50">Detected companies</h2>
+          <h2 className="text-lg font-semibold text-slate-50">
+            Detected companies
+          </h2>
           <div className="space-y-4">
             {detail.companies.map((company) => (
               <CompanyCard
                 key={company.id}
                 company={company}
-                snapshot={company.ticker ? snapshotByTicker.get(company.ticker) : null}
+                snapshot={
+                  company.ticker ? snapshotByTicker.get(company.ticker) : null
+                }
                 onApplyCorrection={onApplyCorrection}
               />
             ))}

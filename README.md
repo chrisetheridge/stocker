@@ -2,30 +2,45 @@
 
 Stocker is a local-first intelligence inbox for morning article reading and stock discovery.
 
-It collects article-like items from configured sources, enriches them with company and stock context, and helps you decide what is worth opening, saving, or researching later.
+It collects article-like items from configured sources, enriches them with company and stock context, and helps you decide what to open, save, or research later.
 
-This repository is the v1 monorepo foundation:
+## What Stocker Is
+
+Stocker is the v1 monorepo for a single-user local intelligence inbox.
 
 - `apps/web` is the Next.js web app and primary UI
 - `apps/worker` is the background worker process
 - `packages/*` holds shared service and domain packages
 
-## What It Does
+## v1.0 Scope
 
-The v1 product is designed to:
+v1.0 supports:
 
-- ingest RSS/Atom and Reddit public feed-style sources
-- show a combined inbox of fetched items
-- enrich items in the background with company and stock context
-- let you save items for stock research
-- keep the service core reusable for future CLI or TUI clients
+- RSS/Atom and Reddit public feed-style sources
+- combined inbox and item detail views
+- background enrichment with company and stock context
+- saved-for-research state
+- manual ticker corrections
+- reusable service core for future CLI or TUI clients
 
-It is local-first, single-user, and does not include auth, portfolio tracking, alerts, or buy/sell recommendations.
+v1.0 does not include:
 
-## Requirements
+- buy/sell/hold recommendations
+- portfolio tracking
+- alerts or notifications
+- historical price tracking
+- full-text article extraction
+- embedded article reading
+- CLI or TUI client
+- multi-user support or authentication
+- user-facing plugin marketplace
+
+## Prerequisites
 
 - Node.js 20+
 - pnpm 10+
+- local SQLite storage
+- optional LM Studio or another OpenAI-compatible local endpoint
 
 ## Install
 
@@ -33,56 +48,61 @@ It is local-first, single-user, and does not include auth, portfolio tracking, a
 pnpm install
 ```
 
-## Develop
-
-Start the full workspace in one terminal:
+## Configure
 
 ```bash
-pnpm dev
+cp config/stocker.example.yaml config/stocker.yaml
 ```
 
-This runs the web app and worker together through Turbo.
+The app reads `config/stocker.yaml` by default.
+Set `STOCKER_CONFIG_PATH` to point at another YAML file if needed.
 
-If you want to run them separately:
+## Run Migrations
+
+```bash
+pnpm --filter @stocker/db migrate
+```
+
+## Start Web
 
 ```bash
 pnpm --filter @stocker/web dev
+```
+
+The app opens at `http://localhost:3000`.
+
+## Start Worker
+
+```bash
 pnpm --filter @stocker/worker dev
 ```
 
-The web app runs at:
-
-- http://localhost:3000
-
-By default the apps read `config/stocker.yaml` and fall back to
-`config/stocker.example.yaml` if a local config file has not been created yet.
-Set `STOCKER_CONFIG_PATH` to point at a different YAML file if needed.
-
-## Verify
-
-Run the workspace checks from the repository root:
+## Run Tests
 
 ```bash
-pnpm format
-pnpm lint
-pnpm typecheck
 pnpm test
+pnpm typecheck
 pnpm --filter @stocker/web build
-pnpm --filter @stocker/worker typecheck
 ```
 
-## Workspace Commands
+For release verification, also run:
 
-The root `package.json` delegates to Turbo:
+```bash
+sh scripts/verify-v1-local.sh
+```
 
-- `pnpm dev`
-- `pnpm build`
-- `pnpm lint`
-- `pnpm test`
-- `pnpm typecheck`
+## Known Non-Goals
+
+- no investment advice
+- no embedded article reader
+- no full-text extraction
+- no portfolio or holdings tracking
+- no alerts or notifications
 
 ## Project Docs
 
+- [Local development](docs/LOCAL_DEVELOPMENT.md)
+- [Configuration](docs/CONFIGURATION.md)
 - [Product overview](docs/PRODUCT.md)
 - [v1 PRD](docs/PRD_V1.md)
 - [Technology stack](docs/STACK.md)
@@ -90,4 +110,4 @@ The root `package.json` delegates to Turbo:
 
 ## Current State
 
-The monorepo foundation is in place. The next active implementation work is tracked in `docs/work/CURRENT.md`.
+The monorepo foundation is in place. Active release-gate work is tracked in `docs/work/CURRENT.md`.

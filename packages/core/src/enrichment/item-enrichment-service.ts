@@ -41,7 +41,9 @@ export type ItemEnrichmentFailed = {
   readonly errorMessage: string;
 };
 
-export type ItemEnrichmentResult = ItemEnrichmentSucceeded | ItemEnrichmentFailed;
+export type ItemEnrichmentResult =
+  | ItemEnrichmentSucceeded
+  | ItemEnrichmentFailed;
 
 export type ItemEnrichmentServiceDependencies = {
   readonly sourceItemsRepository: Pick<
@@ -50,7 +52,11 @@ export type ItemEnrichmentServiceDependencies = {
   >;
   readonly enrichmentRepository: Pick<
     EnrichmentRepository,
-    'startRun' | 'completeRun' | 'failRun' | 'upsertItemEnrichment' | 'replaceItemCompanies'
+    | 'startRun'
+    | 'completeRun'
+    | 'failRun'
+    | 'upsertItemEnrichment'
+    | 'replaceItemCompanies'
   >;
   readonly stockSnapshotsRepository: Pick<
     StockSnapshotsRepository,
@@ -122,7 +128,9 @@ async function resolveSnapshotForTicker(
 }
 
 export class ItemEnrichmentService {
-  constructor(private readonly dependencies: ItemEnrichmentServiceDependencies) {}
+  constructor(
+    private readonly dependencies: ItemEnrichmentServiceDependencies,
+  ) {}
 
   async enrichItem(
     sourceItemId: string,
@@ -130,9 +138,8 @@ export class ItemEnrichmentService {
   ): Promise<ItemEnrichmentResult> {
     const now = resolveNow(this.dependencies.now);
     const logger = resolveLogger(this.dependencies.logger);
-    const detail = await this.dependencies.sourceItemsRepository.getItemDetail(
-      sourceItemId,
-    );
+    const detail =
+      await this.dependencies.sourceItemsRepository.getItemDetail(sourceItemId);
 
     if (!detail) {
       logger.error(`[item:${sourceItemId}] item not found`);
@@ -164,20 +171,20 @@ export class ItemEnrichmentService {
           sourceMetadata: detail.item.sourceMetadata,
         });
 
-      const matchedCompanies = await this.dependencies.companyMatcher.matchCompanies(
-        {
+      const matchedCompanies =
+        await this.dependencies.companyMatcher.matchCompanies({
           sourceItemId,
           candidates: llmOutput.companies,
-        },
-      );
+        });
       logger.debug(
         `[item:${sourceItemId}] matched ${matchedCompanies.length} companies`,
       );
 
-      const companyRecords = await this.dependencies.enrichmentRepository.replaceItemCompanies(
-        sourceItemId,
-        matchedCompanies,
-      );
+      const companyRecords =
+        await this.dependencies.enrichmentRepository.replaceItemCompanies(
+          sourceItemId,
+          matchedCompanies,
+        );
 
       const snapshots: StockSnapshotRecord[] = [];
       for (const company of matchedCompanies) {
@@ -197,13 +204,15 @@ export class ItemEnrichmentService {
 
       const enrichmentState = 'complete' as const;
 
-      const enrichment = await this.dependencies.enrichmentRepository.upsertItemEnrichment(
-        {
+      const enrichment =
+        await this.dependencies.enrichmentRepository.upsertItemEnrichment({
           id: randomUUID(),
           sourceItemId,
           state: enrichmentState,
           summary: summarizeCompanies(matchedCompanies),
-          modelProvider: this.dependencies.llmProvider.providerName ?? this.dependencies.llmProvider.type,
+          modelProvider:
+            this.dependencies.llmProvider.providerName ??
+            this.dependencies.llmProvider.type,
           modelName: this.dependencies.llmProvider.modelName,
           promptVersion:
             this.dependencies.llmProvider.promptVersion ?? '2026-04-25',
@@ -211,10 +220,13 @@ export class ItemEnrichmentService {
           errorMessage: null,
           createdAt: now,
           updatedAt: now,
-        },
-      );
+        });
 
-      await this.dependencies.enrichmentRepository.completeRun(run.id, llmOutput, now);
+      await this.dependencies.enrichmentRepository.completeRun(
+        run.id,
+        llmOutput,
+        now,
+      );
       await this.dependencies.sourceItemsRepository.setEnrichmentState(
         sourceItemId,
         enrichmentState,
@@ -238,13 +250,19 @@ export class ItemEnrichmentService {
         `[item:${sourceItemId}] failed enrichment run ${run.id}: ${errorMessage}`,
       );
 
-      await this.dependencies.enrichmentRepository.failRun(run.id, errorMessage, now);
+      await this.dependencies.enrichmentRepository.failRun(
+        run.id,
+        errorMessage,
+        now,
+      );
       await this.dependencies.enrichmentRepository.upsertItemEnrichment({
         id: randomUUID(),
         sourceItemId,
         state: 'failed',
         summary: null,
-        modelProvider: this.dependencies.llmProvider.providerName ?? this.dependencies.llmProvider.type,
+        modelProvider:
+          this.dependencies.llmProvider.providerName ??
+          this.dependencies.llmProvider.type,
         modelName: this.dependencies.llmProvider.modelName,
         promptVersion:
           this.dependencies.llmProvider.promptVersion ?? '2026-04-25',

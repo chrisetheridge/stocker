@@ -1,11 +1,6 @@
 import * as React from "react";
 
-type Variant =
-  | "primary"
-  | "secondary"
-  | "ghost"
-  | "danger"
-  | "muted";
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "muted";
 
 function cn(...parts: Array<string | undefined | false | null>): string {
   return parts.filter(Boolean).join(" ");
@@ -29,7 +24,10 @@ export const Button = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
     variant?: Variant;
   }
->(function Button({ className, variant = "primary", type = "button", ...props }, ref) {
+>(function Button(
+  { className, variant = "primary", type = "button", ...props },
+  ref,
+) {
   return (
     <button
       ref={ref}
@@ -79,7 +77,7 @@ export const Input = React.forwardRef<
     <input
       ref={ref}
       className={cn(
-        "h-10 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm text-slate-100 placeholder:text-slate-500 ring-0 transition focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/30",
+        "h-10 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm text-slate-100 ring-0 transition placeholder:text-slate-500 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30 focus:outline-none",
         className,
       )}
       {...props}
@@ -95,7 +93,7 @@ export const Select = React.forwardRef<
     <select
       ref={ref}
       className={cn(
-        "h-10 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm text-slate-100 ring-0 transition focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/30",
+        "h-10 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm text-slate-100 ring-0 transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30 focus:outline-none",
         className,
       )}
       {...props}
@@ -111,7 +109,7 @@ export const Textarea = React.forwardRef<
     <textarea
       ref={ref}
       className={cn(
-        "min-h-24 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 ring-0 transition focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/30",
+        "min-h-24 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 ring-0 transition placeholder:text-slate-500 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30 focus:outline-none",
         className,
       )}
       {...props}
@@ -138,7 +136,9 @@ export function CardHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("border-b border-white/10 p-4", className)} {...props} />;
+  return (
+    <div className={cn("border-b border-white/10 p-4", className)} {...props} />
+  );
 }
 
 export function CardBody({
@@ -154,7 +154,10 @@ export function Section({
 }: React.HTMLAttributes<HTMLElement>) {
   return (
     <section
-      className={cn("space-y-4 rounded-3xl border border-white/10 bg-slate-950/50 p-5", className)}
+      className={cn(
+        "space-y-4 rounded-3xl border border-white/10 bg-slate-950/50 p-5",
+        className,
+      )}
       {...props}
     />
   );

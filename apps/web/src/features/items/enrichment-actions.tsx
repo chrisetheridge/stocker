@@ -20,7 +20,12 @@ export function EnrichmentActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <SavedResearchToggle saved={saved} onToggle={onToggleSaved} />
-      <Button type="button" variant="secondary" onClick={onRetry} disabled={retryDisabled}>
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={onRetry}
+        disabled={retryDisabled}
+      >
         Retry enrichment
       </Button>
       <Button

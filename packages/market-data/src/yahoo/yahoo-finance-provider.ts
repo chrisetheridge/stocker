@@ -4,13 +4,15 @@ import type { MarketDataProvider } from '../types';
 import { normalizeSearchResult, normalizeSnapshot } from './yahoo-normalize';
 
 export type YahooFinanceClient = {
-  search(query: string, ...args: any[]): Promise<unknown>;
-  quote(ticker: string, ...args: any[]): Promise<unknown>;
-  quoteSummary(ticker: string, ...args: any[]): Promise<unknown>;
+  search(query: string, ...args: unknown[]): Promise<unknown>;
+  quote(ticker: string, ...args: unknown[]): Promise<unknown>;
+  quoteSummary(ticker: string, ...args: unknown[]): Promise<unknown>;
 };
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : {};
 }
 
 function asArray(value: unknown): unknown[] {
@@ -46,13 +48,17 @@ function resolveQuoteSummary(value: unknown): Record<string, unknown> | null {
 export class YahooFinanceMarketDataProvider implements MarketDataProvider {
   readonly type = 'yahoo-finance2' as const;
 
-  constructor(private readonly client: YahooFinanceClient = new YahooFinance()) {}
+  constructor(
+    private readonly client: YahooFinanceClient = new YahooFinance(),
+  ) {}
 
   async searchCompanies(query: string, universe: string) {
     const response = await this.client.search(query);
     const candidates = resolveSearchResults(response)
       .map((candidate) => normalizeSearchResult(candidate, query))
-      .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate))
+      .filter((candidate): candidate is NonNullable<typeof candidate> =>
+        Boolean(candidate),
+      )
       .filter((candidate) =>
         universe.toLowerCase() === 'us'
           ? candidate.confidence > 0 || Boolean(candidate.exchange)

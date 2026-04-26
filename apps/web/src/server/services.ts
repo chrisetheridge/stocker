@@ -1,8 +1,5 @@
-import { loadConfigFromEnv } from '@stocker/config';
-import {
-  createAppServices,
-  type AppServices,
-} from '@stocker/core';
+import { loadConfigFromEnv } from "@stocker/config";
+import { createAppServices, type AppServices } from "@stocker/core";
 import {
   createEnrichmentRepository,
   createJobsRepository,
@@ -10,21 +7,19 @@ import {
   createSourcesRepository,
   createStockSnapshotsRepository,
   createTickerCorrectionsRepository,
-} from '@stocker/db';
+} from "@stocker/db";
 import {
   createMarketDataProviderRegistry,
   createYahooFinanceMarketDataProvider,
-} from '@stocker/market-data';
-import {
-  createOpenAiCompatibleLlmProvider,
-} from '@stocker/llm';
+} from "@stocker/market-data";
+import { createOpenAiCompatibleLlmProvider } from "@stocker/llm";
 import {
   createSourceAdapterRegistry,
   redditAdapter,
   rssAdapter,
-} from '@stocker/source-adapters';
+} from "@stocker/source-adapters";
 
-import { db } from '~/server/db';
+import { db } from "~/server/db";
 
 let appServicesPromise: Promise<AppServices> | null = null;
 
@@ -54,7 +49,10 @@ async function initializeAppServices(): Promise<AppServices> {
   const marketDataProviderRegistry = createMarketDataProviderRegistry([
     createYahooFinanceMarketDataProvider(),
   ]);
-  const sourceAdapters = createSourceAdapterRegistry([rssAdapter, redditAdapter]);
+  const sourceAdapters = createSourceAdapterRegistry([
+    rssAdapter,
+    redditAdapter,
+  ]);
   const llmProvider = createOpenAiCompatibleLlmProvider({
     baseURL: config.llm.provider.baseUrl,
     apiKey: process.env[config.llm.provider.apiKeyEnv],

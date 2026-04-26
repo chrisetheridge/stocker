@@ -4,9 +4,7 @@ import {
   enrichmentOutputSchema,
   normalizePromptInput,
 } from '../enrichment-schema';
-import {
-  buildEnrichmentPrompt,
-} from '../prompt-template';
+import { buildEnrichmentPrompt } from '../prompt-template';
 import type {
   EnrichmentOutput,
   EnrichmentPromptInput,
@@ -79,7 +77,9 @@ function extractStructuredOutputText(
     }
 
     const text = message.content
-      .map((part) => (part.type === 'text' || part.type === 'reasoning' ? part.text : ''))
+      .map((part) =>
+        part.type === 'text' || part.type === 'reasoning' ? part.text : '',
+      )
       .filter((part): part is string => Boolean(part))
       .join('\n')
       .trim();
@@ -121,7 +121,12 @@ export class OpenAiCompatibleLlmProvider implements LlmProvider {
       });
     this.generateTextImpl =
       dependencies.generateTextImpl ??
-      (async (args) => (generateText(args as any) as Promise<{ output: unknown }>));
+      (async (args) => {
+        const result = await generateText(
+          args as Parameters<typeof generateText>[0],
+        );
+        return { output: result.output };
+      });
   }
 
   async extractStockRelevance(

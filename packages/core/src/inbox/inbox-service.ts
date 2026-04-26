@@ -1,5 +1,9 @@
 import type { ItemDetailRecord } from '@stocker/db';
-import type { SourceRecord, SourceItemsRepository, SourcesRepository } from '@stocker/db';
+import type {
+  SourceRecord,
+  SourceItemsRepository,
+  SourcesRepository,
+} from '@stocker/db';
 
 import type { EnrichmentState, ItemReadState } from '../domain/enums';
 
@@ -16,10 +20,7 @@ export type InboxListFilters = {
 };
 
 export type InboxServiceDependencies = {
-  readonly sourceItemsRepository: Pick<
-    SourceItemsRepository,
-    'listInboxItems'
-  >;
+  readonly sourceItemsRepository: Pick<SourceItemsRepository, 'listInboxItems'>;
   readonly sourcesRepository: Pick<SourcesRepository, 'listSourceStatus'>;
 };
 
@@ -35,7 +36,9 @@ function normalizeQuery(value?: string): string | undefined {
 export class InboxService {
   constructor(private readonly dependencies: InboxServiceDependencies) {}
 
-  async listInboxItems(filters: InboxListFilters = {}): Promise<InboxItemRecord[]> {
+  async listInboxItems(
+    filters: InboxListFilters = {},
+  ): Promise<InboxItemRecord[]> {
     const [items, sources] = await Promise.all([
       this.dependencies.sourceItemsRepository.listInboxItems({
         sourceId: filters.sourceId,

@@ -5,7 +5,11 @@ import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { exampleConfig } from './example-config';
-import { loadConfig, loadConfigFromEnv, resolveConfigPath } from './load-config';
+import {
+  loadConfig,
+  loadConfigFromEnv,
+  resolveConfigPath,
+} from './load-config';
 
 async function writeConfigFile(contents: string): Promise<string> {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-'));
@@ -145,7 +149,9 @@ llm:
   });
 
   it('finds the root example config when no local config exists', async () => {
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-path-'));
+    const tempDir = await fs.mkdtemp(
+      path.join(os.tmpdir(), 'stocker-config-path-'),
+    );
     const configDir = path.join(tempDir, 'config');
     const nestedDir = path.join(tempDir, 'apps', 'worker');
 
@@ -175,7 +181,9 @@ llm:
   });
 
   it('prefers a real config file over the example config', async () => {
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-path-'));
+    const tempDir = await fs.mkdtemp(
+      path.join(os.tmpdir(), 'stocker-config-path-'),
+    );
     const configDir = path.join(tempDir, 'config');
     const nestedDir = path.join(tempDir, 'apps', 'web');
 
