@@ -31,9 +31,8 @@ async function main(): Promise<void> {
     handlers,
     workerId: `worker-${process.pid}`,
     pollingIntervalMs: 1_000,
+    logger: console,
   });
-
-  console.log(`[${runtime.workerId}] started in polling mode`);
 
   const abortController = new AbortController();
   const stop = (): void => abortController.abort();

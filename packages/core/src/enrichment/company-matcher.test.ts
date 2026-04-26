@@ -170,6 +170,49 @@ describe('CompanyMatcher', () => {
     });
   });
 
+  it('validates an exact provider match even when other plausible results exist', async () => {
+    const { matcher, searchCompanies } = createDependencies({
+      searchResults: [
+        {
+          companyName: 'NVIDIA Corporation',
+          ticker: 'NVDA',
+          exchange: 'NASDAQ',
+          sector: 'Technology',
+          confidence: 0.98,
+          raw: {},
+        },
+        {
+          companyName: 'NVIDIA Corp.',
+          ticker: 'NVDC',
+          exchange: 'OTC',
+          sector: 'Technology',
+          confidence: 0.82,
+          raw: {},
+        },
+      ],
+    });
+
+    const result = await matcher.matchCompanies({
+      sourceItemId: 'item-1',
+      candidates: [
+        {
+          companyName: 'NVIDIA Corporation',
+          relationshipType: 'mentioned',
+          relevanceExplanation: 'NVIDIA is mentioned.',
+          confidence: 0.92,
+        },
+      ],
+    });
+
+    expect(searchCompanies).toHaveBeenCalledWith('NVIDIA Corporation', 'US');
+    expect(result[0]).toMatchObject({
+      companyName: 'NVIDIA Corporation',
+      matchStatus: 'validated',
+      ticker: 'NVDA',
+      exchange: 'NASDAQ',
+    });
+  });
+
   it('keeps uncertain matches visible when market data is unavailable', async () => {
     const { matcher } = createDependencies({
       searchResults: [],

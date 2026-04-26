@@ -5,6 +5,7 @@ import {
   inArray,
   or,
   sql,
+  type SQL,
   type InferSelectModel,
 } from 'drizzle-orm';
 
@@ -29,6 +30,7 @@ import {
   stringifyJsonRecord,
   toNullableText,
   toNullableBoolean,
+  withSqliteBusyRetry,
 } from './helpers';
 
 type SourceItemRow = InferSelectModel<typeof sourceItems>;
@@ -149,28 +151,13 @@ export class SourceItemsRepository {
   async upsertFromSource(
     input: SourceItemUpsertInput,
   ): Promise<SourceItemRecord> {
-    const [row] = await this.database
-      .insert(sourceItems)
-      .values({
-        id: input.id,
-        sourceId: input.sourceId,
-        externalId: input.externalId,
-        canonicalUrl: input.canonicalUrl,
-        title: input.title,
-        summary: toNullableText(input.summary),
-        author: toNullableText(input.author),
-        publishedAt: toNullableText(input.publishedAt),
-        fetchedAt: input.fetchedAt,
-        sourceMetadataJson: stringifyJsonRecord(input.sourceMetadata),
-        readState: input.readState,
-        savedForResearch: toNullableBoolean(input.savedForResearch) ?? false,
-        enrichmentState: input.enrichmentState,
-        createdAt: input.createdAt,
-        updatedAt: input.updatedAt,
-      })
-      .onConflictDoUpdate({
-        target: [sourceItems.sourceId, sourceItems.externalId],
-        set: {
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .insert(sourceItems)
+        .values({
+          id: input.id,
+          sourceId: input.sourceId,
+          externalId: input.externalId,
           canonicalUrl: input.canonicalUrl,
           title: input.title,
           summary: toNullableText(input.summary),
@@ -178,10 +165,27 @@ export class SourceItemsRepository {
           publishedAt: toNullableText(input.publishedAt),
           fetchedAt: input.fetchedAt,
           sourceMetadataJson: stringifyJsonRecord(input.sourceMetadata),
+          readState: input.readState,
+          savedForResearch: toNullableBoolean(input.savedForResearch) ?? false,
+          enrichmentState: input.enrichmentState,
+          createdAt: input.createdAt,
           updatedAt: input.updatedAt,
-        },
-      })
-      .returning();
+        })
+        .onConflictDoUpdate({
+          target: [sourceItems.sourceId, sourceItems.externalId],
+          set: {
+            canonicalUrl: input.canonicalUrl,
+            title: input.title,
+            summary: toNullableText(input.summary),
+            author: toNullableText(input.author),
+            publishedAt: toNullableText(input.publishedAt),
+            fetchedAt: input.fetchedAt,
+            sourceMetadataJson: stringifyJsonRecord(input.sourceMetadata),
+            updatedAt: input.updatedAt,
+          },
+        })
+        .returning(),
+    );
 
     if (!row) {
       throw new Error('Failed to upsert source item');
@@ -193,25 +197,27 @@ export class SourceItemsRepository {
   async listInboxItems(
     filters: InboxFilters = {},
   ): Promise<ItemDetailRecord[]> {
-    const matchingIds = await this.findMatchingItemIds(filters);
-    if (matchingIds.length === 0) {
-      return [];
-    }
+    return withSqliteBusyRetry(async () => {
+      const matchingIds = await this.findMatchingItemIds(filters);
+      if (matchingIds.length === 0) {
+        return [];
+      }
 
-    const rows = await this.database
-      .select()
-      .from(sourceItems)
-      .where(inArray(sourceItems.id, matchingIds))
-      .orderBy(desc(sourceItems.fetchedAt), desc(sourceItems.createdAt));
+      const rows = await this.database
+        .select()
+        .from(sourceItems)
+        .where(inArray(sourceItems.id, matchingIds))
+        .orderBy(desc(sourceItems.fetchedAt), desc(sourceItems.createdAt));
 
-    const items = await Promise.all(
-      rows.map((row) => this.loadItemDetail(row.id)),
-    );
-    return items.filter((item): item is ItemDetailRecord => Boolean(item));
+      const items = await Promise.all(
+        rows.map((row) => this.loadItemDetail(row.id)),
+      );
+      return items.filter((item): item is ItemDetailRecord => Boolean(item));
+    });
   }
 
   async getItemDetail(itemId: string): Promise<ItemDetailRecord | null> {
-    return this.loadItemDetail(itemId);
+    return withSqliteBusyRetry(() => this.loadItemDetail(itemId));
   }
 
   async findBySourceAndExternalId(
@@ -232,15 +238,29 @@ export class SourceItemsRepository {
     return row ? mapSourceItem(row) : null;
   }
 
+  async listItemIdsBySourceId(sourceId: string): Promise<string[]> {
+    const rows = await withSqliteBusyRetry(() =>
+      this.database
+        .select({ id: sourceItems.id })
+        .from(sourceItems)
+        .where(eq(sourceItems.sourceId, sourceId))
+        .orderBy(desc(sourceItems.fetchedAt), desc(sourceItems.createdAt)),
+    );
+
+    return rows.map((row) => row.id);
+  }
+
   async markReadState(
     itemId: string,
     readState: string,
   ): Promise<SourceItemRecord | null> {
-    const [row] = await this.database
-      .update(sourceItems)
-      .set({ readState, updatedAt: new Date().toISOString() })
-      .where(eq(sourceItems.id, itemId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(sourceItems)
+        .set({ readState, updatedAt: new Date().toISOString() })
+        .where(eq(sourceItems.id, itemId))
+        .returning(),
+    );
 
     return row ? mapSourceItem(row) : null;
   }
@@ -249,14 +269,16 @@ export class SourceItemsRepository {
     itemId: string,
     saved: boolean,
   ): Promise<SourceItemRecord | null> {
-    const [row] = await this.database
-      .update(sourceItems)
-      .set({
-        savedForResearch: saved,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(sourceItems.id, itemId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(sourceItems)
+        .set({
+          savedForResearch: saved,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(sourceItems.id, itemId))
+        .returning(),
+    );
 
     return row ? mapSourceItem(row) : null;
   }
@@ -265,14 +287,16 @@ export class SourceItemsRepository {
     itemId: string,
     state: string,
   ): Promise<SourceItemRecord | null> {
-    const [row] = await this.database
-      .update(sourceItems)
-      .set({
-        enrichmentState: state,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(sourceItems.id, itemId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(sourceItems)
+        .set({
+          enrichmentState: state,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(sourceItems.id, itemId))
+        .returning(),
+    );
 
     return row ? mapSourceItem(row) : null;
   }
@@ -280,27 +304,33 @@ export class SourceItemsRepository {
   private async loadItemDetail(
     itemId: string,
   ): Promise<ItemDetailRecord | null> {
-    const [itemRow] = await this.database
-      .select()
-      .from(sourceItems)
-      .where(eq(sourceItems.id, itemId))
-      .limit(1);
+    const [itemRow] = await withSqliteBusyRetry(() =>
+      this.database
+        .select()
+        .from(sourceItems)
+        .where(eq(sourceItems.id, itemId))
+        .limit(1),
+    );
 
     if (!itemRow) {
       return null;
     }
 
-    const [enrichmentRow] = await this.database
-      .select()
-      .from(itemEnrichments)
-      .where(eq(itemEnrichments.sourceItemId, itemId))
-      .limit(1);
+    const [enrichmentRow] = await withSqliteBusyRetry(() =>
+      this.database
+        .select()
+        .from(itemEnrichments)
+        .where(eq(itemEnrichments.sourceItemId, itemId))
+        .limit(1),
+    );
 
-    const companyRows = await this.database
-      .select()
-      .from(itemCompanies)
-      .where(eq(itemCompanies.sourceItemId, itemId))
-      .orderBy(desc(itemCompanies.createdAt));
+    const companyRows = await withSqliteBusyRetry(() =>
+      this.database
+        .select()
+        .from(itemCompanies)
+        .where(eq(itemCompanies.sourceItemId, itemId))
+        .orderBy(desc(itemCompanies.createdAt)),
+    );
 
     const companies = companyRows.map(mapItemCompany);
     const snapshots = await loadSnapshotsForCompanies(this.database, companies);
@@ -314,7 +344,7 @@ export class SourceItemsRepository {
   }
 
   private async findMatchingItemIds(filters: InboxFilters): Promise<string[]> {
-    const companyConditions = [];
+    const companyConditions: SQL[] = [];
     const query = filters.query?.trim();
 
     if (filters.ticker) {
@@ -329,15 +359,17 @@ export class SourceItemsRepository {
 
     if (query) {
       const pattern = toSearchPattern(query);
-      companyConditions.push(
-        or(
-          sql`lower(${itemCompanies.companyName}) like ${pattern}`,
-          sql`lower(coalesce(${itemCompanies.ticker}, '')) like ${pattern}`,
-        ),
+      const companyQueryCondition = or(
+        sql`lower(${itemCompanies.companyName}) like ${pattern}`,
+        sql`lower(coalesce(${itemCompanies.ticker}, '')) like ${pattern}`,
       );
+
+      if (companyQueryCondition) {
+        companyConditions.push(companyQueryCondition);
+      }
     }
 
-    const baseConditions = [];
+    const baseConditions: SQL[] = [];
     if (filters.sourceId) {
       baseConditions.push(eq(sourceItems.sourceId, filters.sourceId));
     }
@@ -357,16 +389,23 @@ export class SourceItemsRepository {
 
     const candidateIds = new Set<string>();
     if (companyConditions.length > 0) {
-      const companyRows = await this.database
-        .selectDistinct({
-          sourceItemId: itemCompanies.sourceItemId,
-        })
-        .from(itemCompanies)
-        .where(
-          companyConditions.length === 1
-            ? companyConditions[0]
-            : and(...companyConditions),
-        );
+      const companyWhereCondition =
+        companyConditions.length === 1
+          ? companyConditions[0]
+          : and(...companyConditions);
+
+      if (!companyWhereCondition) {
+        return [];
+      }
+
+      const companyRows = await withSqliteBusyRetry(() =>
+        this.database
+          .selectDistinct({
+            sourceItemId: itemCompanies.sourceItemId,
+          })
+          .from(itemCompanies)
+          .where(companyWhereCondition),
+      );
 
       for (const row of companyRows) {
         candidateIds.add(row.sourceItemId);
@@ -375,17 +414,19 @@ export class SourceItemsRepository {
 
     if (query) {
       const pattern = toSearchPattern(query);
-      const sourceRows = await this.database
-        .select({ id: sourceItems.id })
-        .from(sourceItems)
-        .where(
-          or(
-            sql`lower(${sourceItems.title}) like ${pattern}`,
-            sql`lower(coalesce(${sourceItems.summary}, '')) like ${pattern}`,
-            sql`lower(coalesce(${sourceItems.author}, '')) like ${pattern}`,
-            sql`lower(${sourceItems.canonicalUrl}) like ${pattern}`,
+      const sourceRows = await withSqliteBusyRetry(() =>
+        this.database
+          .select({ id: sourceItems.id })
+          .from(sourceItems)
+          .where(
+            or(
+              sql`lower(${sourceItems.title}) like ${pattern}`,
+              sql`lower(coalesce(${sourceItems.summary}, '')) like ${pattern}`,
+              sql`lower(coalesce(${sourceItems.author}, '')) like ${pattern}`,
+              sql`lower(${sourceItems.canonicalUrl}) like ${pattern}`,
+            ),
           ),
-        );
+      );
 
       for (const row of sourceRows) {
         candidateIds.add(row.id);
@@ -409,28 +450,34 @@ export class SourceItemsRepository {
     }> = [];
 
     if (conditions.length === 0) {
-      rows = await this.database
-        .select({ id: sourceItems.id })
-        .from(sourceItems)
-        .orderBy(...orderBy)
-        .limit(filters.limit ?? 100)
-        .offset(filters.offset ?? 0);
+      rows = await withSqliteBusyRetry(() =>
+        this.database
+          .select({ id: sourceItems.id })
+          .from(sourceItems)
+          .orderBy(...orderBy)
+          .limit(filters.limit ?? 100)
+          .offset(filters.offset ?? 0),
+      );
     } else if (conditions.length === 1) {
-      rows = await this.database
-        .select({ id: sourceItems.id })
-        .from(sourceItems)
-        .where(conditions[0])
-        .orderBy(...orderBy)
-        .limit(filters.limit ?? 100)
-        .offset(filters.offset ?? 0);
+      rows = await withSqliteBusyRetry(() =>
+        this.database
+          .select({ id: sourceItems.id })
+          .from(sourceItems)
+          .where(conditions[0])
+          .orderBy(...orderBy)
+          .limit(filters.limit ?? 100)
+          .offset(filters.offset ?? 0),
+      );
     } else {
-      rows = await this.database
-        .select({ id: sourceItems.id })
-        .from(sourceItems)
-        .where(and(...conditions))
-        .orderBy(...orderBy)
-        .limit(filters.limit ?? 100)
-        .offset(filters.offset ?? 0);
+      rows = await withSqliteBusyRetry(() =>
+        this.database
+          .select({ id: sourceItems.id })
+          .from(sourceItems)
+          .where(and(...conditions))
+          .orderBy(...orderBy)
+          .limit(filters.limit ?? 100)
+          .offset(filters.offset ?? 0),
+      );
     }
 
     return rows.map((row) => row.id);

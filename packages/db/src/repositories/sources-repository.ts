@@ -7,6 +7,7 @@ import {
   parseJsonRecord,
   stringifyJsonRecord,
   toNullableText,
+  withSqliteBusyRetry,
 } from './helpers';
 
 type SourceRow = InferSelectModel<typeof sources>;
@@ -33,24 +34,11 @@ export class SourcesRepository {
   async upsertConfiguredSource(
     input: SourceUpsertInput,
   ): Promise<SourceRecord> {
-    const [row] = await this.database
-      .insert(sources)
-      .values({
-        id: input.id,
-        type: input.type,
-        name: input.name,
-        enabled: input.enabled,
-        configJson: stringifyJsonRecord(input.config),
-        lastFetchedAt: toNullableText(input.lastFetchedAt),
-        lastSuccessAt: toNullableText(input.lastSuccessAt),
-        lastErrorAt: toNullableText(input.lastErrorAt),
-        lastErrorMessage: toNullableText(input.lastErrorMessage),
-        createdAt: input.createdAt,
-        updatedAt: input.updatedAt,
-      })
-      .onConflictDoUpdate({
-        target: sources.id,
-        set: {
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .insert(sources)
+        .values({
+          id: input.id,
           type: input.type,
           name: input.name,
           enabled: input.enabled,
@@ -59,10 +47,25 @@ export class SourcesRepository {
           lastSuccessAt: toNullableText(input.lastSuccessAt),
           lastErrorAt: toNullableText(input.lastErrorAt),
           lastErrorMessage: toNullableText(input.lastErrorMessage),
+          createdAt: input.createdAt,
           updatedAt: input.updatedAt,
-        },
-      })
-      .returning();
+        })
+        .onConflictDoUpdate({
+          target: sources.id,
+          set: {
+            type: input.type,
+            name: input.name,
+            enabled: input.enabled,
+            configJson: stringifyJsonRecord(input.config),
+            lastFetchedAt: toNullableText(input.lastFetchedAt),
+            lastSuccessAt: toNullableText(input.lastSuccessAt),
+            lastErrorAt: toNullableText(input.lastErrorAt),
+            lastErrorMessage: toNullableText(input.lastErrorMessage),
+            updatedAt: input.updatedAt,
+          },
+        })
+        .returning(),
+    );
 
     if (!row) {
       throw new Error('Failed to upsert configured source');
@@ -72,10 +75,9 @@ export class SourcesRepository {
   }
 
   async listEnabledSources(): Promise<SourceRecord[]> {
-    const rows = await this.database
-      .select()
-      .from(sources)
-      .where(eq(sources.enabled, true));
+    const rows = await withSqliteBusyRetry(() =>
+      this.database.select().from(sources).where(eq(sources.enabled, true)),
+    );
 
     return rows.map(mapSource);
   }
@@ -84,17 +86,19 @@ export class SourcesRepository {
     sourceId: string,
     fetchedAt: string,
   ): Promise<SourceRecord | null> {
-    const [row] = await this.database
-      .update(sources)
-      .set({
-        lastFetchedAt: fetchedAt,
-        lastSuccessAt: fetchedAt,
-        lastErrorAt: null,
-        lastErrorMessage: null,
-        updatedAt: fetchedAt,
-      })
-      .where(eq(sources.id, sourceId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(sources)
+        .set({
+          lastFetchedAt: fetchedAt,
+          lastSuccessAt: fetchedAt,
+          lastErrorAt: null,
+          lastErrorMessage: null,
+          updatedAt: fetchedAt,
+        })
+        .where(eq(sources.id, sourceId))
+        .returning(),
+    );
 
     return row ? mapSource(row) : null;
   }
@@ -104,21 +108,23 @@ export class SourcesRepository {
     errorMessage: string,
     failedAt: string,
   ): Promise<SourceRecord | null> {
-    const [row] = await this.database
-      .update(sources)
-      .set({
-        lastErrorAt: failedAt,
-        lastErrorMessage: errorMessage,
-        updatedAt: failedAt,
-      })
-      .where(eq(sources.id, sourceId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(sources)
+        .set({
+          lastErrorAt: failedAt,
+          lastErrorMessage: errorMessage,
+          updatedAt: failedAt,
+        })
+        .where(eq(sources.id, sourceId))
+        .returning(),
+    );
 
     return row ? mapSource(row) : null;
   }
 
   async listSourceStatus(): Promise<SourceRecord[]> {
-    const rows = await this.database.select().from(sources);
+    const rows = await withSqliteBusyRetry(() => this.database.select().from(sources));
     return rows.map(mapSource);
   }
 }

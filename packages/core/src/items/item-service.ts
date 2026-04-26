@@ -13,10 +13,19 @@ export type ItemDetailViewRecord = ItemDetailRecord & {
   >[number] | null;
 };
 
+export type SourceEnrichmentRetryResult = {
+  readonly sourceId: string;
+  readonly itemsFound: number;
+  readonly jobsEnqueued: number;
+  readonly batchSize: number;
+};
+
+const sourceEnrichmentBatchSize = 4;
+
 export type ItemServiceDependencies = {
   readonly sourceItemsRepository: Pick<
     SourceItemsRepository,
-    'getItemDetail' | 'markReadState' | 'setSavedForResearch'
+    'getItemDetail' | 'listItemIdsBySourceId' | 'markReadState' | 'setSavedForResearch'
   >;
   readonly sourcesRepository: Pick<SourcesRepository, 'listSourceStatus'>;
   readonly jobService: Pick<
@@ -78,6 +87,33 @@ export class ItemService {
       itemId,
       'retry',
     );
+  }
+
+  async retryEnrichmentForSource(
+    sourceId: string,
+  ): Promise<SourceEnrichmentRetryResult> {
+    const itemIds =
+      await this.dependencies.sourceItemsRepository.listItemIdsBySourceId(
+        sourceId,
+      );
+
+    let jobsEnqueued = 0;
+    for (let index = 0; index < itemIds.length; index += sourceEnrichmentBatchSize) {
+      const batch = itemIds.slice(index, index + sourceEnrichmentBatchSize);
+      const jobs = await Promise.all(
+        batch.map((itemId) =>
+          this.dependencies.jobService.enqueueItemEnrichment(itemId, 'retry'),
+        ),
+      );
+      jobsEnqueued += jobs.length;
+    }
+
+    return {
+      sourceId,
+      itemsFound: itemIds.length,
+      jobsEnqueued,
+      batchSize: sourceEnrichmentBatchSize,
+    };
   }
 
   async refreshStockDataForItem(itemId: string) {

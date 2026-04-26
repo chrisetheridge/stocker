@@ -20,8 +20,8 @@ market:
 llm:
   provider:
     type: openai-compatible
-    baseUrl: http://localhost:1234/v1
+    baseUrl: http://192.168.2.88:1234/v1
     apiKeyEnv: LM_STUDIO_API_KEY
-    model: local-model
+    model: unsloth/qwen3.6-35b-a3b
   prompts:
     enrichmentSystem: You extract public-company stock relevance from article metadata.

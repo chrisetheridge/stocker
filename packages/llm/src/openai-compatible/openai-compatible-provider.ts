@@ -22,6 +22,7 @@ export type OpenAiCompatibleLlmProviderConfig = {
   headers?: Record<string, string>;
   providerName?: string;
   promptOverride?: string;
+  supportsStructuredOutputs?: boolean;
 };
 
 export type OpenAiCompatibleLlmProviderDependencies = {
@@ -38,6 +39,57 @@ export class LlmOutputValidationError extends Error {
     super(message);
     this.name = 'LlmOutputValidationError';
   }
+}
+
+type AssistantMessagePart = {
+  readonly type?: string;
+  readonly text?: string;
+};
+
+type AssistantMessage = {
+  readonly role?: string;
+  readonly content?: readonly AssistantMessagePart[];
+};
+
+type NoObjectGeneratedErrorLike = {
+  readonly response?: {
+    readonly messages?: readonly AssistantMessage[];
+  };
+};
+
+function stripCodeFences(text: string): string {
+  return text
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+}
+
+function extractStructuredOutputText(
+  error: NoObjectGeneratedErrorLike,
+): string | undefined {
+  const messages = error.response?.messages;
+  if (!messages) {
+    return undefined;
+  }
+
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role !== 'assistant' || !message.content) {
+      continue;
+    }
+
+    const text = message.content
+      .map((part) => (part.type === 'text' || part.type === 'reasoning' ? part.text : ''))
+      .filter((part): part is string => Boolean(part))
+      .join('\n')
+      .trim();
+
+    if (text) {
+      return stripCodeFences(text);
+    }
+  }
+
+  return undefined;
 }
 
 export class OpenAiCompatibleLlmProvider implements LlmProvider {
@@ -65,6 +117,7 @@ export class OpenAiCompatibleLlmProvider implements LlmProvider {
         apiKey: config.apiKey,
         headers: config.headers,
         providerName: config.providerName,
+        supportsStructuredOutputs: config.supportsStructuredOutputs,
       });
     this.generateTextImpl =
       dependencies.generateTextImpl ??
@@ -106,11 +159,37 @@ export class OpenAiCompatibleLlmProvider implements LlmProvider {
         throw error;
       }
 
-      if (error instanceof Error) {
-        throw new LlmOutputValidationError(error.message);
+      const fallbackText = extractStructuredOutputText(
+        error as NoObjectGeneratedErrorLike,
+      );
+      if (fallbackText) {
+        try {
+          const parsedJson = JSON.parse(fallbackText) as unknown;
+          const parsed = enrichmentOutputSchema.safeParse(parsedJson);
+          if (parsed.success) {
+            return parsed.data;
+          }
+
+          throw new LlmOutputValidationError(parsed.error.message);
+        } catch (fallbackError) {
+          if (fallbackError instanceof LlmOutputValidationError) {
+            throw fallbackError;
+          }
+        }
       }
 
-      throw new LlmOutputValidationError('Invalid LLM output');
+      const providerLabel = `${this.providerName} (${this.config.baseURL})`;
+      const modelLabel = this.modelName;
+
+      if (error instanceof Error) {
+        throw new LlmOutputValidationError(
+          `OpenAI-compatible request failed for ${providerLabel} using ${modelLabel}: ${error.message}`,
+        );
+      }
+
+      throw new LlmOutputValidationError(
+        `OpenAI-compatible request failed for ${providerLabel} using ${modelLabel}: Invalid LLM output`,
+      );
     }
   }
 }

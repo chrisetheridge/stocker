@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import type { StockerConfig } from '@stocker/config';
-import type { Database } from '@stocker/db';
+import type { Database, JobRecord } from '@stocker/db';
 import type { JobService } from '@stocker/core';
 
 import { createWorkerRuntime } from './runtime';
@@ -41,9 +41,38 @@ function createHandlers() {
   } as const;
 }
 
+function createJobRecord(): JobRecord {
+  return {
+    id: 'job-1',
+    type: 'item.enrich',
+    state: 'succeeded',
+    payload: {
+      sourceItemId: 'item-1',
+      trigger: 'manual',
+    },
+    attemptCount: 0,
+    maxAttempts: 3,
+    runAfter: '2026-04-25T10:00:00.000Z',
+    lockedAt: null,
+    lockedBy: null,
+    lastErrorMessage: null,
+    createdAt: '2026-04-25T10:00:00.000Z',
+    updatedAt: '2026-04-25T10:00:00.000Z',
+  };
+}
+
 describe('createWorkerRuntime', () => {
   it('returns the configured runtime and delegates one job at a time', async () => {
-    const claimAndRunNextJob = vi.fn(async () => ({ status: 'idle' as const }));
+    const claimAndRunNextJob = vi.fn(async () => ({
+      status: 'succeeded' as const,
+      job: createJobRecord(),
+    }));
+    const logger = {
+      debug: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    };
     const jobService = {
       claimAndRunNextJob,
     } as Pick<JobService, 'claimAndRunNextJob'> as JobService;
@@ -54,6 +83,7 @@ describe('createWorkerRuntime', () => {
       handlers: createHandlers(),
       workerId: 'worker-1',
       pollingIntervalMs: 1,
+      logger,
     });
 
     await runtime.runOnce();
@@ -64,6 +94,9 @@ describe('createWorkerRuntime', () => {
         itemEnrich: expect.any(Function),
       }),
     );
+    expect(logger.info).toHaveBeenCalledWith(
+      '[worker-1] completed item.enrich job job-1',
+    );
   });
 
   it('loops until aborted', async () => {
@@ -72,6 +105,12 @@ describe('createWorkerRuntime', () => {
       controller.abort();
       return { status: 'idle' as const };
     });
+    const logger = {
+      debug: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    };
     const jobService = {
       claimAndRunNextJob,
     } as Pick<JobService, 'claimAndRunNextJob'> as JobService;
@@ -82,10 +121,15 @@ describe('createWorkerRuntime', () => {
       handlers: createHandlers(),
       workerId: 'worker-1',
       pollingIntervalMs: 1,
+      logger,
     });
 
     await runtime.runLoop(controller.signal);
 
     expect(claimAndRunNextJob).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith(
+      '[worker-1] worker loop started with 1ms poll interval',
+    );
+    expect(logger.info).toHaveBeenCalledWith('[worker-1] worker loop stopped');
   });
 });

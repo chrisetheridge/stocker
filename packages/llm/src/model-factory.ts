@@ -5,6 +5,7 @@ export type OpenAiCompatibleModelFactoryConfig = {
   apiKey?: string;
   headers?: Record<string, string>;
   providerName?: string;
+  supportsStructuredOutputs?: boolean;
 };
 
 export function createOpenAiCompatibleModelFactory(
@@ -15,6 +16,7 @@ export function createOpenAiCompatibleModelFactory(
     baseURL: config.baseURL,
     apiKey: config.apiKey,
     headers: config.headers,
+    supportsStructuredOutputs: config.supportsStructuredOutputs ?? true,
   });
 
   return (modelName: string) => provider(modelName);

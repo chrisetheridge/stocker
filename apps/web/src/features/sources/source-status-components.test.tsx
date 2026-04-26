@@ -23,12 +23,14 @@ describe("Source status components", () => {
       React.createElement(SourceStatusCard, {
         source,
         onRefresh: () => undefined,
+        onRetryEnrichment: () => undefined,
       }),
     );
 
     expect(markup).toContain("Hacker News");
     expect(markup).toContain("Healthy");
     expect(markup).toContain("Refresh source");
+    expect(markup).toContain("Retry all enrichment");
   });
 
   it("renders failed source details", () => {
@@ -49,6 +51,7 @@ describe("Source status components", () => {
       React.createElement(SourceStatusCard, {
         source,
         onRefresh: () => undefined,
+        onRetryEnrichment: () => undefined,
       }),
     );
 

@@ -13,6 +13,14 @@ describe("router contract", () => {
     const refreshStockDataForItem = vi.fn().mockResolvedValue([]);
     const listSourceStatus = vi.fn().mockResolvedValue([]);
     const refreshSource = vi.fn().mockResolvedValue({ status: "succeeded" });
+    const retryEnrichmentForSource = vi
+      .fn()
+      .mockResolvedValue({
+        sourceId: "source-1",
+        itemsFound: 0,
+        jobsEnqueued: 0,
+        batchSize: 4,
+      });
     const refreshAllEnabledSources = vi.fn().mockResolvedValue([]);
     const listCorrections = vi.fn().mockResolvedValue([]);
     const applyTickerCorrection = vi
@@ -34,6 +42,7 @@ describe("router contract", () => {
         markReadState,
         setSavedForResearch,
         retryEnrichment,
+        retryEnrichmentForSource,
         refreshStockDataForItem,
       },
       sourceRefreshService: {
@@ -77,6 +86,7 @@ describe("router contract", () => {
     await caller.items.refreshStockData({ itemId: "item-1" });
     await caller.sources.status();
     await caller.sources.refresh({ sourceId: "source-1" });
+    await caller.sources.retryEnrichment({ sourceId: "source-1" });
     await caller.sources.refreshAll();
     await caller.corrections.list();
     await caller.corrections.applyCorrection({
@@ -93,6 +103,7 @@ describe("router contract", () => {
       "source-1",
       "manual",
     );
+    expect(retryEnrichmentForSource).toHaveBeenCalledWith("source-1");
     expect(applyTickerCorrection).toHaveBeenCalledWith(
       "Acme",
       "ACME",

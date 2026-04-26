@@ -16,6 +16,11 @@ export function SourceStatusScreen() {
       await utils.sources.status.invalidate();
     },
   });
+  const retryEnrichmentMutation = api.sources.retryEnrichment.useMutation({
+    onSuccess: async () => {
+      await utils.sources.status.invalidate();
+    },
+  });
   const refreshAllMutation = api.sources.refreshAll.useMutation({
     onSuccess: async () => {
       await utils.sources.status.invalidate();
@@ -74,6 +79,17 @@ export function SourceStatusScreen() {
             key={source.id}
             source={source}
             onRefresh={() => refreshMutation.mutate({ sourceId: source.id })}
+            onRetryEnrichment={() =>
+              retryEnrichmentMutation.mutate({ sourceId: source.id })
+            }
+            refreshDisabled={
+              refreshMutation.isPending &&
+              refreshMutation.variables?.sourceId === source.id
+            }
+            retryEnrichmentDisabled={
+              retryEnrichmentMutation.isPending &&
+              retryEnrichmentMutation.variables?.sourceId === source.id
+            }
           />
         ))}
       </div>

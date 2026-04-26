@@ -61,6 +61,7 @@ export type ItemEnrichmentServiceDependencies = {
   readonly marketDataProvider: Pick<MarketDataProvider, 'getSnapshot'>;
   readonly now?: () => string;
   readonly universe?: string;
+  readonly logger?: Pick<Console, 'info' | 'warn' | 'error' | 'debug'>;
 };
 
 const defaultNow = (): string => new Date().toISOString();
@@ -71,6 +72,12 @@ function resolveNow(now?: () => string): string {
 
 function formatErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unknown enrichment failure';
+}
+
+function resolveLogger(
+  logger?: Pick<Console, 'info' | 'warn' | 'error' | 'debug'>,
+): Pick<Console, 'info' | 'warn' | 'error' | 'debug'> {
+  return logger ?? console;
 }
 
 function toStoredSnapshot(
@@ -122,11 +129,13 @@ export class ItemEnrichmentService {
     _trigger: ItemEnrichmentTrigger,
   ): Promise<ItemEnrichmentResult> {
     const now = resolveNow(this.dependencies.now);
+    const logger = resolveLogger(this.dependencies.logger);
     const detail = await this.dependencies.sourceItemsRepository.getItemDetail(
       sourceItemId,
     );
 
     if (!detail) {
+      logger.error(`[item:${sourceItemId}] item not found`);
       return {
         status: 'failed',
         sourceItemId,
@@ -138,8 +147,14 @@ export class ItemEnrichmentService {
       sourceItemId,
       now,
     );
+    logger.info(
+      `[item:${sourceItemId}] started enrichment run ${run.id} for "${detail.item.title}"`,
+    );
 
     try {
+      logger.debug(
+        `[item:${sourceItemId}] requesting LLM extraction from ${this.dependencies.llmProvider.providerName ?? this.dependencies.llmProvider.type}/${this.dependencies.llmProvider.modelName ?? 'unknown-model'}`,
+      );
       const llmOutput: EnrichmentOutput =
         await this.dependencies.llmProvider.extractStockRelevance({
           title: detail.item.title,
@@ -154,6 +169,9 @@ export class ItemEnrichmentService {
           sourceItemId,
           candidates: llmOutput.companies,
         },
+      );
+      logger.debug(
+        `[item:${sourceItemId}] matched ${matchedCompanies.length} companies`,
       );
 
       const companyRecords = await this.dependencies.enrichmentRepository.replaceItemCompanies(
@@ -205,6 +223,9 @@ export class ItemEnrichmentService {
         sourceItemId,
         enrichmentState,
       );
+      logger.info(
+        `[item:${sourceItemId}] completed enrichment run ${run.id} as ${enrichmentState}`,
+      );
 
       return {
         status: 'succeeded',
@@ -217,6 +238,9 @@ export class ItemEnrichmentService {
       };
     } catch (error) {
       const errorMessage = formatErrorMessage(error);
+      logger.error(
+        `[item:${sourceItemId}] failed enrichment run ${run.id}: ${errorMessage}`,
+      );
 
       await this.dependencies.enrichmentRepository.failRun(run.id, errorMessage, now);
       await this.dependencies.enrichmentRepository.upsertItemEnrichment({

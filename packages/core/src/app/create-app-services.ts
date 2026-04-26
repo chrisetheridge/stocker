@@ -51,6 +51,7 @@ export function createAppServices(
     marketDataProvider,
     now: dependencies.now,
     universe: dependencies.config.market.defaultUniverse,
+    logger: dependencies.logger,
   });
 
   const sourceRefreshService = createSourceRefreshService({

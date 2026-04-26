@@ -12,7 +12,11 @@ import { randomUUID } from 'node:crypto';
 import { jobs } from '../schema';
 import type { Database } from '../client';
 import type { JobEnqueueOptions, JobRecord, JsonRecord } from '../types';
-import { parseJsonRecord, stringifyJsonRecord } from './helpers';
+import {
+  parseJsonRecord,
+  stringifyJsonRecord,
+  withSqliteBusyRetry,
+} from './helpers';
 
 type JobRow = InferSelectModel<typeof jobs>;
 
@@ -42,23 +46,25 @@ export class JobsRepository {
     options: JobEnqueueOptions = {},
   ): Promise<JobRecord> {
     const now = options.createdAt ?? new Date().toISOString();
-    const [row] = await this.database
-      .insert(jobs)
-      .values({
-        id: options.id ?? randomUUID(),
-        type,
-        state: 'queued',
-        payloadJson: stringifyJsonRecord(payload),
-        attemptCount: 0,
-        maxAttempts: options.maxAttempts ?? 3,
-        runAfter: options.runAfter ?? now,
-        lockedAt: null,
-        lockedBy: null,
-        lastErrorMessage: null,
-        createdAt: now,
-        updatedAt: options.updatedAt ?? now,
-      })
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .insert(jobs)
+        .values({
+          id: options.id ?? randomUUID(),
+          type,
+          state: 'queued',
+          payloadJson: stringifyJsonRecord(payload),
+          attemptCount: 0,
+          maxAttempts: options.maxAttempts ?? 3,
+          runAfter: options.runAfter ?? now,
+          lockedAt: null,
+          lockedBy: null,
+          lastErrorMessage: null,
+          createdAt: now,
+          updatedAt: options.updatedAt ?? now,
+        })
+        .returning(),
+    );
 
     if (!row) {
       throw new Error('Failed to enqueue job');
@@ -68,51 +74,55 @@ export class JobsRepository {
   }
 
   async claimNext(workerId: string, now: string): Promise<JobRecord | null> {
-    return this.database.transaction(async (transaction) => {
-      const [nextJob] = await transaction
-        .select()
-        .from(jobs)
-        .where(
-          and(
-            eq(jobs.state, 'queued'),
-            lte(jobs.runAfter, now),
-            sql`${jobs.attemptCount} < ${jobs.maxAttempts}`,
-          ),
-        )
-        .orderBy(asc(jobs.runAfter), asc(jobs.createdAt))
-        .limit(1);
+    return withSqliteBusyRetry(() =>
+      this.database.transaction(async (transaction) => {
+        const [nextJob] = await transaction
+          .select()
+          .from(jobs)
+          .where(
+            and(
+              eq(jobs.state, 'queued'),
+              lte(jobs.runAfter, now),
+              sql`${jobs.attemptCount} < ${jobs.maxAttempts}`,
+            ),
+          )
+          .orderBy(asc(jobs.runAfter), asc(jobs.createdAt))
+          .limit(1);
 
-      if (!nextJob) {
-        return null;
-      }
+        if (!nextJob) {
+          return null;
+        }
 
-      const [claimed] = await transaction
-        .update(jobs)
-        .set({
-          state: 'running',
-          lockedAt: now,
-          lockedBy: workerId,
-          updatedAt: now,
-        })
-        .where(and(eq(jobs.id, nextJob.id), eq(jobs.state, 'queued')))
-        .returning();
+        const [claimed] = await transaction
+          .update(jobs)
+          .set({
+            state: 'running',
+            lockedAt: now,
+            lockedBy: workerId,
+            updatedAt: now,
+          })
+          .where(and(eq(jobs.id, nextJob.id), eq(jobs.state, 'queued')))
+          .returning();
 
-      return claimed ? mapJob(claimed) : null;
-    });
+        return claimed ? mapJob(claimed) : null;
+      }),
+    );
   }
 
   async markSucceeded(jobId: string, now: string): Promise<JobRecord | null> {
-    const [row] = await this.database
-      .update(jobs)
-      .set({
-        state: 'succeeded',
-        lockedAt: null,
-        lockedBy: null,
-        lastErrorMessage: null,
-        updatedAt: now,
-      })
-      .where(eq(jobs.id, jobId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(jobs)
+        .set({
+          state: 'succeeded',
+          lockedAt: null,
+          lockedBy: null,
+          lastErrorMessage: null,
+          updatedAt: now,
+        })
+        .where(eq(jobs.id, jobId))
+        .returning(),
+    );
 
     return row ? mapJob(row) : null;
   }
@@ -122,17 +132,19 @@ export class JobsRepository {
     errorMessage: string,
     now: string,
   ): Promise<JobRecord | null> {
-    const [row] = await this.database
-      .update(jobs)
-      .set({
-        state: 'failed',
-        lockedAt: null,
-        lockedBy: null,
-        lastErrorMessage: errorMessage,
-        updatedAt: now,
-      })
-      .where(eq(jobs.id, jobId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(jobs)
+        .set({
+          state: 'failed',
+          lockedAt: null,
+          lockedBy: null,
+          lastErrorMessage: errorMessage,
+          updatedAt: now,
+        })
+        .where(eq(jobs.id, jobId))
+        .returning(),
+    );
 
     return row ? mapJob(row) : null;
   }
@@ -143,29 +155,33 @@ export class JobsRepository {
     errorMessage: string,
     now: string,
   ): Promise<JobRecord | null> {
-    const [row] = await this.database
-      .update(jobs)
-      .set({
-        state: 'queued',
-        attemptCount: sql`${jobs.attemptCount} + 1`,
-        runAfter,
-        lockedAt: null,
-        lockedBy: null,
-        lastErrorMessage: errorMessage,
-        updatedAt: now,
-      })
-      .where(eq(jobs.id, jobId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(jobs)
+        .set({
+          state: 'queued',
+          attemptCount: sql`${jobs.attemptCount} + 1`,
+          runAfter,
+          lockedAt: null,
+          lockedBy: null,
+          lastErrorMessage: errorMessage,
+          updatedAt: now,
+        })
+        .where(eq(jobs.id, jobId))
+        .returning(),
+    );
 
     return row ? mapJob(row) : null;
   }
 
   async listRecentJobs(limit: number): Promise<JobRecord[]> {
-    const rows = await this.database
-      .select()
-      .from(jobs)
-      .orderBy(desc(jobs.createdAt))
-      .limit(limit);
+    const rows = await withSqliteBusyRetry(() =>
+      this.database
+        .select()
+        .from(jobs)
+        .orderBy(desc(jobs.createdAt))
+        .limit(limit),
+    );
 
     return rows.map(mapJob);
   }

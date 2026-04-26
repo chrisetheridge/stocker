@@ -41,6 +41,10 @@ function normalizeTicker(value: string): string {
   return value.trim().toUpperCase();
 }
 
+function normalizeForComparison(value: string): string {
+  return value.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 function buildBaseCompanyInput(
   sourceItemId: string,
   companyName: string,
@@ -149,6 +153,11 @@ export class CompanyMatcher {
         normalizedCompanyName,
         universe,
       );
+      const exactMatch = searchResults.find(
+        (result) =>
+          normalizeForComparison(result.companyName) ===
+          normalizeForComparison(normalizedCompanyName),
+      );
       const [bestMatch] = searchResults;
       const company = buildBaseCompanyInput(
         input.sourceItemId,
@@ -156,6 +165,18 @@ export class CompanyMatcher {
         candidate,
         now,
       );
+
+      if (
+        exactMatch &&
+        isValidatedConfidence(candidate.confidence) &&
+        isValidatedConfidence(exactMatch.confidence)
+      ) {
+        company.ticker = exactMatch.ticker;
+        company.exchange = exactMatch.exchange ?? undefined;
+        company.matchStatus = 'validated';
+        matched.push(company);
+        continue;
+      }
 
       if (
         bestMatch &&

@@ -15,6 +15,7 @@ import {
   parseJsonRecord,
   stringifyJsonRecord,
   toNullableText,
+  withSqliteBusyRetry,
 } from './helpers';
 
 type EnrichmentRunRow = InferSelectModel<typeof enrichmentRuns>;
@@ -73,19 +74,21 @@ export class EnrichmentRepository {
   constructor(private readonly database: Database) {}
 
   async startRun(itemId: string, now: string): Promise<EnrichmentRunRecord> {
-    const [row] = await this.database
-      .insert(enrichmentRuns)
-      .values({
-        id: randomUUID(),
-        sourceItemId: itemId,
-        state: 'running',
-        startedAt: now,
-        finishedAt: null,
-        errorMessage: null,
-        rawLlmOutputJson: null,
-        createdAt: now,
-      })
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .insert(enrichmentRuns)
+        .values({
+          id: randomUUID(),
+          sourceItemId: itemId,
+          state: 'running',
+          startedAt: now,
+          finishedAt: null,
+          errorMessage: null,
+          rawLlmOutputJson: null,
+          createdAt: now,
+        })
+        .returning(),
+    );
 
     if (!row) {
       throw new Error('Failed to start enrichment run');
@@ -99,16 +102,18 @@ export class EnrichmentRepository {
     rawOutput: JsonRecord,
     now: string,
   ): Promise<EnrichmentRunRecord | null> {
-    const [row] = await this.database
-      .update(enrichmentRuns)
-      .set({
-        state: 'complete',
-        finishedAt: now,
-        errorMessage: null,
-        rawLlmOutputJson: stringifyJsonRecord(rawOutput),
-      })
-      .where(eq(enrichmentRuns.id, runId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(enrichmentRuns)
+        .set({
+          state: 'complete',
+          finishedAt: now,
+          errorMessage: null,
+          rawLlmOutputJson: stringifyJsonRecord(rawOutput),
+        })
+        .where(eq(enrichmentRuns.id, runId))
+        .returning(),
+    );
 
     return row ? mapRun(row) : null;
   }
@@ -118,15 +123,17 @@ export class EnrichmentRepository {
     errorMessage: string,
     now: string,
   ): Promise<EnrichmentRunRecord | null> {
-    const [row] = await this.database
-      .update(enrichmentRuns)
-      .set({
-        state: 'failed',
-        finishedAt: now,
-        errorMessage,
-      })
-      .where(eq(enrichmentRuns.id, runId))
-      .returning();
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .update(enrichmentRuns)
+        .set({
+          state: 'failed',
+          finishedAt: now,
+          errorMessage,
+        })
+        .where(eq(enrichmentRuns.id, runId))
+        .returning(),
+    );
 
     return row ? mapRun(row) : null;
   }
@@ -134,24 +141,12 @@ export class EnrichmentRepository {
   async upsertItemEnrichment(
     input: ItemEnrichmentInput,
   ): Promise<ItemEnrichmentRecord> {
-    const [row] = await this.database
-      .insert(itemEnrichments)
-      .values({
-        id: input.id,
-        sourceItemId: input.sourceItemId,
-        state: input.state,
-        summary: toNullableText(input.summary),
-        modelProvider: toNullableText(input.modelProvider),
-        modelName: toNullableText(input.modelName),
-        promptVersion: toNullableText(input.promptVersion),
-        completedAt: toNullableText(input.completedAt),
-        errorMessage: toNullableText(input.errorMessage),
-        createdAt: input.createdAt,
-        updatedAt: input.updatedAt,
-      })
-      .onConflictDoUpdate({
-        target: itemEnrichments.sourceItemId,
-        set: {
+    const [row] = await withSqliteBusyRetry(() =>
+      this.database
+        .insert(itemEnrichments)
+        .values({
+          id: input.id,
+          sourceItemId: input.sourceItemId,
           state: input.state,
           summary: toNullableText(input.summary),
           modelProvider: toNullableText(input.modelProvider),
@@ -159,10 +154,24 @@ export class EnrichmentRepository {
           promptVersion: toNullableText(input.promptVersion),
           completedAt: toNullableText(input.completedAt),
           errorMessage: toNullableText(input.errorMessage),
+          createdAt: input.createdAt,
           updatedAt: input.updatedAt,
-        },
-      })
-      .returning();
+        })
+        .onConflictDoUpdate({
+          target: itemEnrichments.sourceItemId,
+          set: {
+            state: input.state,
+            summary: toNullableText(input.summary),
+            modelProvider: toNullableText(input.modelProvider),
+            modelName: toNullableText(input.modelName),
+            promptVersion: toNullableText(input.promptVersion),
+            completedAt: toNullableText(input.completedAt),
+            errorMessage: toNullableText(input.errorMessage),
+            updatedAt: input.updatedAt,
+          },
+        })
+        .returning(),
+    );
 
     if (!row) {
       throw new Error('Failed to upsert item enrichment');
@@ -175,37 +184,39 @@ export class EnrichmentRepository {
     itemId: string,
     companies: ItemCompanyInput[],
   ): Promise<ItemCompanyRecord[]> {
-    return this.database.transaction(async (transaction) => {
-      await transaction
-        .delete(itemCompanies)
-        .where(eq(itemCompanies.sourceItemId, itemId));
+    return withSqliteBusyRetry(() =>
+      this.database.transaction(async (transaction) => {
+        await transaction
+          .delete(itemCompanies)
+          .where(eq(itemCompanies.sourceItemId, itemId));
 
-      if (companies.length === 0) {
-        return [];
-      }
+        if (companies.length === 0) {
+          return [];
+        }
 
-      const rows = await transaction
-        .insert(itemCompanies)
-        .values(
-          companies.map((company) => ({
-            id: company.id,
-            sourceItemId: itemId,
-            companyName: company.companyName,
-            ticker: toNullableText(company.ticker),
-            exchange: toNullableText(company.exchange),
-            relationshipType: company.relationshipType,
-            relevanceExplanation: company.relevanceExplanation,
-            confidence: company.confidence,
-            matchStatus: company.matchStatus,
-            evidenceText: toNullableText(company.evidenceText),
-            createdAt: company.createdAt,
-            updatedAt: company.updatedAt,
-          })),
-        )
-        .returning();
+        const rows = await transaction
+          .insert(itemCompanies)
+          .values(
+            companies.map((company) => ({
+              id: company.id,
+              sourceItemId: itemId,
+              companyName: company.companyName,
+              ticker: toNullableText(company.ticker),
+              exchange: toNullableText(company.exchange),
+              relationshipType: company.relationshipType,
+              relevanceExplanation: company.relevanceExplanation,
+              confidence: company.confidence,
+              matchStatus: company.matchStatus,
+              evidenceText: toNullableText(company.evidenceText),
+              createdAt: company.createdAt,
+              updatedAt: company.updatedAt,
+            })),
+          )
+          .returning();
 
-      return rows.map(mapItemCompany);
-    });
+        return rows.map(mapItemCompany);
+      }),
+    );
   }
 }
 

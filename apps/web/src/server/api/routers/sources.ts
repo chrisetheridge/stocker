@@ -14,6 +14,11 @@ export const sourcesRouter = createTRPCRouter({
         "manual",
       );
     }),
+  retryEnrichment: publicProcedure
+    .input(z.object({ sourceId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.services.itemService.retryEnrichmentForSource(input.sourceId);
+    }),
   refreshAll: publicProcedure.mutation(async ({ ctx }) => {
     return ctx.services.sourceRefreshService.refreshAllEnabledSources(
       "manual",

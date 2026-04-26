@@ -6,9 +6,15 @@ import type { SourceRecord } from "@stocker/db";
 export function SourceStatusCard({
   source,
   onRefresh,
+  onRetryEnrichment,
+  refreshDisabled,
+  retryEnrichmentDisabled,
 }: {
   source: SourceRecord;
   onRefresh: () => void;
+  onRetryEnrichment: () => void;
+  refreshDisabled?: boolean;
+  retryEnrichmentDisabled?: boolean;
 }) {
   const healthy = !source.lastErrorMessage;
 
@@ -27,9 +33,27 @@ export function SourceStatusCard({
           </div>
           <h3 className="text-lg font-semibold text-slate-50">{source.name}</h3>
         </div>
-        <Button type="button" variant="secondary" onClick={onRefresh}>
-          Refresh source
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onRefresh}
+            disabled={refreshDisabled}
+          >
+            Refresh source
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onRetryEnrichment}
+            disabled={retryEnrichmentDisabled}
+          >
+            Retry all enrichment
+          </Button>
+        </div>
+        <p className="text-xs text-slate-400">
+          Retry queues item enrichment jobs in batches of 4.
+        </p>
       </CardHeader>
       <CardBody className="grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
         <div>
