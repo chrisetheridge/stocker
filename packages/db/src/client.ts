@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { createClient, type Client } from '@libsql/client';
 import { drizzle, type LibSQLDatabase } from 'drizzle-orm/libsql';
 
@@ -11,6 +14,14 @@ const globalForDb = globalThis as unknown as {
 };
 
 export function createDatabaseClient(url: string): Client {
+  if (url.startsWith('file:')) {
+    const filePath = url.slice('file:'.length);
+    const absolutePath = path.isAbsolute(filePath)
+      ? filePath
+      : path.resolve(filePath);
+    fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+  }
+
   return createClient({ url });
 }
 

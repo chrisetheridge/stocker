@@ -5,7 +5,10 @@
   "dependencies": {
     "@stocker/config": "workspace:*",
     "@stocker/core": "workspace:*",
-    "@stocker/db": "workspace:*"
+    "@stocker/db": "workspace:*",
+    "@stocker/llm": "workspace:*",
+    "@stocker/market-data": "workspace:*",
+    "@stocker/source-adapters": "workspace:*"
   },
   "devDependencies": {
     "tsx": "latest"

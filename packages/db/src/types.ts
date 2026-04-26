@@ -217,6 +217,7 @@ export type InboxFilters = {
   readState?: string;
   savedForResearch?: boolean;
   enrichmentState?: string;
+  query?: string;
   limit?: number;
   offset?: number;
 };

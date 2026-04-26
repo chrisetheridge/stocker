@@ -2,7 +2,10 @@
   "name": "@stocker/db",
   "private": true,
   "type": "module",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./migrate": "./src/migrate.ts"
+  },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {

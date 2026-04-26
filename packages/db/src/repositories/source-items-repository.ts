@@ -3,6 +3,7 @@ import {
   desc,
   eq,
   inArray,
+  or,
   sql,
   type InferSelectModel,
 } from 'drizzle-orm';
@@ -106,6 +107,10 @@ function mapStockSnapshot(row: StockSnapshotRow): StockSnapshotRecord {
     raw: parseJsonRecord(row.rawJson),
     createdAt: row.createdAt,
   };
+}
+
+function toSearchPattern(query: string): string {
+  return `%${query.trim().toLowerCase()}%`;
 }
 
 async function loadSnapshotsForCompanies(
@@ -310,6 +315,7 @@ export class SourceItemsRepository {
 
   private async findMatchingItemIds(filters: InboxFilters): Promise<string[]> {
     const companyConditions = [];
+    const query = filters.query?.trim();
 
     if (filters.ticker) {
       companyConditions.push(eq(itemCompanies.ticker, filters.ticker));
@@ -318,6 +324,16 @@ export class SourceItemsRepository {
     if (filters.companyName) {
       companyConditions.push(
         sql`lower(${itemCompanies.companyName}) = lower(${filters.companyName})`,
+      );
+    }
+
+    if (query) {
+      const pattern = toSearchPattern(query);
+      companyConditions.push(
+        or(
+          sql`lower(${itemCompanies.companyName}) like ${pattern}`,
+          sql`lower(coalesce(${itemCompanies.ticker}, '')) like ${pattern}`,
+        ),
       );
     }
 
@@ -339,7 +355,7 @@ export class SourceItemsRepository {
       );
     }
 
-    let candidateIds: string[] | null = null;
+    const candidateIds = new Set<string>();
     if (companyConditions.length > 0) {
       const companyRows = await this.database
         .selectDistinct({
@@ -352,15 +368,35 @@ export class SourceItemsRepository {
             : and(...companyConditions),
         );
 
-      candidateIds = companyRows.map((row) => row.sourceItemId);
-      if (candidateIds.length === 0) {
-        return [];
+      for (const row of companyRows) {
+        candidateIds.add(row.sourceItemId);
       }
     }
 
-    const conditions = candidateIds
-      ? [inArray(sourceItems.id, candidateIds)]
-      : [];
+    if (query) {
+      const pattern = toSearchPattern(query);
+      const sourceRows = await this.database
+        .select({ id: sourceItems.id })
+        .from(sourceItems)
+        .where(
+          or(
+            sql`lower(${sourceItems.title}) like ${pattern}`,
+            sql`lower(coalesce(${sourceItems.summary}, '')) like ${pattern}`,
+            sql`lower(coalesce(${sourceItems.author}, '')) like ${pattern}`,
+            sql`lower(${sourceItems.canonicalUrl}) like ${pattern}`,
+          ),
+        );
+
+      for (const row of sourceRows) {
+        candidateIds.add(row.id);
+      }
+    }
+
+    if (query && candidateIds.size === 0) {
+      return [];
+    }
+
+    const conditions = candidateIds.size > 0 ? [inArray(sourceItems.id, [...candidateIds])] : [];
     conditions.push(...baseConditions);
 
     const orderBy = [

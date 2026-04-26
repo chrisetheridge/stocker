@@ -13,7 +13,7 @@ function createLogger() {
 }
 
 describe('redditAdapter', () => {
-  it('normalizes link and text posts while skipping invalid items', async () => {
+  it('normalizes atom entries while skipping invalid items', async () => {
     const fetch = vi.fn(
       async () => new Response(redditFeedFixtureXml, { status: 200 }),
     );
@@ -52,16 +52,17 @@ describe('redditAdapter', () => {
     );
     expect(result.items[0]?.sourceMetadata).toMatchObject({
       subreddit: 'r/stocks',
-      score: 123,
-      commentsUrl:
-        'https://www.reddit.com/r/stocks/comments/abc123/acme_shares_hit_a_new_high/',
-      outboundUrl: 'https://example.com/acme-press-release',
+      score: undefined,
+      commentsUrl: undefined,
+      outboundUrl: undefined,
       entryId: 't3_abc123',
+      feedType: 'atom',
     });
     expect(result.items[1]?.title).toBe('Daily discussion thread');
     expect(result.items[1]?.sourceMetadata).toMatchObject({
       outboundUrl: undefined,
       subreddit: 'r/stocks',
+      feedType: 'atom',
     });
     expect(result.warnings).toHaveLength(1);
     expect(logger.warn).toHaveBeenCalledTimes(1);

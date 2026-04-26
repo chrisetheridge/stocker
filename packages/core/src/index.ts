@@ -1,5 +1,9 @@
 export const corePackageName = '@stocker/core';
 
+export * from './app/app-services';
+export * from './app/create-app-services';
+export * from './inbox/inbox-service';
+export * from './items/item-service';
 export * from './jobs/job-handlers';
 export * from './jobs/job-payloads';
 export * from './jobs/job-service';

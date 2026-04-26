@@ -2,10 +2,10 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { exampleConfig } from './example-config';
-import { loadConfig } from './load-config';
+import { loadConfig, loadConfigFromEnv, resolveConfigPath } from './load-config';
 
 async function writeConfigFile(contents: string): Promise<string> {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-'));
@@ -13,6 +13,10 @@ async function writeConfigFile(contents: string): Promise<string> {
   await fs.writeFile(filePath, contents, 'utf8');
   return filePath;
 }
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe('loadConfig', () => {
   it('loads a valid config', async () => {
@@ -138,5 +142,104 @@ llm:
   it('matches the example config object', () => {
     expect(exampleConfig.market.defaultUniverse).toBe('US');
     expect(exampleConfig.sources).toHaveLength(2);
+  });
+
+  it('finds the root example config when no local config exists', async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-path-'));
+    const configDir = path.join(tempDir, 'config');
+    const nestedDir = path.join(tempDir, 'apps', 'worker');
+
+    await fs.mkdir(configDir, { recursive: true });
+    await fs.mkdir(nestedDir, { recursive: true });
+    await fs.writeFile(
+      path.join(configDir, 'stocker.example.yaml'),
+      `
+market:
+  provider:
+    type: yahoo-finance2
+llm:
+  provider:
+    type: openai-compatible
+    baseUrl: http://localhost:1234/v1
+    apiKeyEnv: LM_STUDIO_API_KEY
+    model: local-model
+  prompts:
+    enrichmentSystem: You extract public-company stock relevance from article metadata.
+`,
+      'utf8',
+    );
+
+    await expect(resolveConfigPath(nestedDir)).resolves.toBe(
+      path.join(configDir, 'stocker.example.yaml'),
+    );
+  });
+
+  it('prefers a real config file over the example config', async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stocker-config-path-'));
+    const configDir = path.join(tempDir, 'config');
+    const nestedDir = path.join(tempDir, 'apps', 'web');
+
+    await fs.mkdir(configDir, { recursive: true });
+    await fs.mkdir(nestedDir, { recursive: true });
+    await fs.writeFile(
+      path.join(configDir, 'stocker.example.yaml'),
+      `
+market:
+  provider:
+    type: yahoo-finance2
+llm:
+  provider:
+    type: openai-compatible
+    baseUrl: http://localhost:1234/v1
+    apiKeyEnv: LM_STUDIO_API_KEY
+    model: local-model
+  prompts:
+    enrichmentSystem: You extract public-company stock relevance from article metadata.
+`,
+      'utf8',
+    );
+    await fs.writeFile(
+      path.join(configDir, 'stocker.yaml'),
+      `
+market:
+  provider:
+    type: yahoo-finance2
+llm:
+  provider:
+    type: openai-compatible
+    baseUrl: http://localhost:1234/v1
+    apiKeyEnv: LM_STUDIO_API_KEY
+    model: local-model
+  prompts:
+    enrichmentSystem: You extract public-company stock relevance from article metadata.
+`,
+      'utf8',
+    );
+
+    await expect(resolveConfigPath(nestedDir)).resolves.toBe(
+      path.join(configDir, 'stocker.yaml'),
+    );
+  });
+
+  it('loads the config path from STOCKER_CONFIG_PATH when set', async () => {
+    const filePath = await writeConfigFile(`
+market:
+  provider:
+    type: yahoo-finance2
+llm:
+  provider:
+    type: openai-compatible
+    baseUrl: http://localhost:1234/v1
+    apiKeyEnv: LM_STUDIO_API_KEY
+    model: local-model
+  prompts:
+    enrichmentSystem: You extract public-company stock relevance from article metadata.
+`);
+
+    vi.stubEnv('STOCKER_CONFIG_PATH', filePath);
+
+    const config = await loadConfigFromEnv();
+    expect(config.sources).toEqual([]);
+    expect(config.app.databasePath).toBe('.stocker/stocker.sqlite');
   });
 });

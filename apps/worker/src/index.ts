@@ -1,79 +1,33 @@
-import { loadConfigFromEnv } from '@stocker/config';
 import {
-  createJobService,
+  createItemEnrichJobHandler,
   createJobHandlers,
   createSourceRefreshJobHandler,
-  createSourceRefreshService,
+  createStockRefreshJobHandler,
 } from '@stocker/core';
-import {
-  createDatabase,
-  createDatabaseClient,
-  createJobsRepository,
-  createSourceItemsRepository,
-  createSourcesRepository,
-} from '@stocker/db';
-import {
-  createSourceAdapterRegistry,
-  redditAdapter,
-  rssAdapter,
-} from '@stocker/source-adapters';
-import path from 'node:path';
 
 import { createWorkerRuntime } from './runtime';
-
-function toDatabaseUrl(databasePath: string): string {
-  if (databasePath.startsWith('file:')) {
-    return databasePath;
-  }
-
-  return `file:${path.resolve(databasePath)}`;
-}
+import { createWorkerServicesBundle } from './services';
 
 async function main(): Promise<void> {
-  const config = await loadConfigFromEnv();
-  const client = createDatabaseClient(toDatabaseUrl(config.app.databasePath));
-  const database = createDatabase(client);
-  const jobsRepository = createJobsRepository(database);
-  const sourcesRepository = createSourcesRepository(database);
-  const sourceItemsRepository = createSourceItemsRepository(database);
-  const jobService = createJobService({ jobsRepository });
-  const now = new Date().toISOString();
-
-  for (const source of config.sources) {
-    await sourcesRepository.upsertConfiguredSource({
-      id: source.id,
-      type: source.type,
-      name: source.name,
-      enabled: source.enabled,
-      config: source,
-      createdAt: now,
-      updatedAt: now,
-    });
-  }
-
-  const sourceRefreshService = createSourceRefreshService({
-    sourcesRepository,
-    sourceItemsRepository,
-    jobService,
-    sourceAdapters: createSourceAdapterRegistry([rssAdapter, redditAdapter]),
-  });
+  const { config, client, database, services } =
+    await createWorkerServicesBundle();
 
   const handlers = createJobHandlers({
     sourceRefresh: createSourceRefreshJobHandler({
-      sourceRefreshService,
+      sourceRefreshService: services.sourceRefreshService,
     }),
-    itemEnrich: async () => {
-      throw new Error('item.enrich handler is not wired yet');
-    },
-    stockRefresh: async () => {
-      throw new Error('stock.refresh handler is not wired yet');
-    },
+    itemEnrich: createItemEnrichJobHandler({
+      itemEnrichmentService: services.itemEnrichmentService,
+    }),
+    stockRefresh: createStockRefreshJobHandler({
+      stockRefreshService: services.stockRefreshService,
+    }),
   });
 
   const runtime = createWorkerRuntime({
     config,
     database,
-    jobService,
+    jobService: services.jobService,
     handlers,
     workerId: `worker-${process.pid}`,
     pollingIntervalMs: 1_000,

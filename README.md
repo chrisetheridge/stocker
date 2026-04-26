@@ -33,23 +33,30 @@ It is local-first, single-user, and does not include auth, portfolio tracking, a
 pnpm install
 ```
 
-## Run
+## Develop
 
-Start the web app:
+Start the full workspace in one terminal:
+
+```bash
+pnpm dev
+```
+
+This runs the web app and worker together through Turbo.
+
+If you want to run them separately:
 
 ```bash
 pnpm --filter @stocker/web dev
+pnpm --filter @stocker/worker dev
 ```
 
-The app runs at:
+The web app runs at:
 
 - http://localhost:3000
 
-Start the worker process in a separate terminal:
-
-```bash
-pnpm --filter @stocker/worker dev
-```
+By default the apps read `config/stocker.yaml` and fall back to
+`config/stocker.example.yaml` if a local config file has not been created yet.
+Set `STOCKER_CONFIG_PATH` to point at a different YAML file if needed.
 
 ## Verify
 

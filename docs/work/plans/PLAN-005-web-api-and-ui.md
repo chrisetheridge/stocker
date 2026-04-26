@@ -27,7 +27,7 @@
 
 ## TASK-025: Implement Application Service Facade
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-015, TASK-022, TASK-024
 
@@ -75,7 +75,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-026: Implement Inbox and Item Services
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-008, TASK-022
 
@@ -142,7 +142,7 @@ pnpm --filter @stocker/core typecheck
 
 ## TASK-027: Implement tRPC Routers
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-025, TASK-026
 
@@ -214,7 +214,7 @@ pnpm --filter @stocker/web typecheck
 
 ## TASK-028: Build App Shell and Navigation
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-027
 
@@ -270,7 +270,7 @@ Open the web app and confirm the first screen is the inbox.
 
 ## TASK-029: Build Inbox List and Filters
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-027, TASK-028
 
@@ -334,7 +334,7 @@ pnpm --filter @stocker/web build
 
 ## TASK-030: Build Item Detail Page
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-027, TASK-028
 
@@ -396,7 +396,7 @@ pnpm --filter @stocker/web build
 
 ## TASK-031: Build Source Status Page
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-027, TASK-028
 
@@ -444,7 +444,7 @@ pnpm --filter @stocker/web build
 
 ## TASK-032: Add Empty, Loading, and Error States
 
-**Status:** Ready
+**Status:** Done
 
 **Dependencies:** TASK-029, TASK-030, TASK-031
 
@@ -492,10 +492,10 @@ pnpm --filter @stocker/web build
 
 ## Checkpoint: Web API and UI Complete
 
-- [ ] tRPC routers expose required service operations.
-- [ ] Inbox is the first screen.
-- [ ] Inbox filters source, ticker/company, read state, saved state, and enrichment state.
-- [ ] Item detail shows enrichment and stock context.
-- [ ] Source status page shows health and refresh actions.
-- [ ] Failed enrichment and needs-review states are visible.
-- [ ] Root `pnpm test`, `pnpm typecheck`, and web build pass.
+- [x] tRPC routers expose required service operations.
+- [x] Inbox is the first screen.
+- [x] Inbox filters source, ticker/company, read state, saved state, and enrichment state.
+- [x] Item detail shows enrichment and stock context.
+- [x] Source status page shows health and refresh actions.
+- [x] Failed enrichment and needs-review states are visible.
+- [x] Root `pnpm test`, `pnpm typecheck`, and web build pass.

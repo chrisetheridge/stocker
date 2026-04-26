@@ -10,7 +10,10 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { type AppServices } from "@stocker/core";
+
 import { db } from "~/server/db";
+import { getAppServices } from "~/server/services";
 
 /**
  * 1. CONTEXT
@@ -25,10 +28,18 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const services = await getAppServices();
   return {
     db,
+    services,
     ...opts,
   };
+};
+
+export type TRPCContext = {
+  db: typeof db;
+  headers: Headers;
+  services: AppServices;
 };
 
 /**
@@ -38,7 +49,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<TRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
