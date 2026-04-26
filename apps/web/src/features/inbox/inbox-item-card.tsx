@@ -9,24 +9,12 @@ import { EnrichmentStateBadge } from "./enrichment-state-badge";
 import { SavedResearchToggle } from "./saved-research-toggle";
 import { StockChip } from "./stock-chip";
 
-function isNeedsReview(item: InboxItemRecord): boolean {
-  return (
-    item.item.enrichmentState === "needs_review" ||
-    item.companies.some((company) => company.matchStatus === "needs_review")
-  );
-}
-
 function toEnrichmentState(value: string) {
-  if (
-    value === "pending" ||
-    value === "complete" ||
-    value === "needs_review" ||
-    value === "failed"
-  ) {
+  if (value === "pending" || value === "complete" || value === "failed") {
     return value;
   }
 
-  return "pending";
+  return "complete";
 }
 
 export function InboxItemCard({
@@ -46,7 +34,6 @@ export function InboxItemCard({
           <div className="flex flex-wrap items-center gap-2">
             <EnrichmentStateBadge state={toEnrichmentState(item.item.enrichmentState)} />
             {item.item.savedForResearch ? <Badge tone="info">Saved</Badge> : null}
-            {isNeedsReview(item) ? <Badge tone="warning">Needs review</Badge> : null}
             <Badge tone="muted">{sourceName}</Badge>
           </div>
           <Link
@@ -92,8 +79,8 @@ export function InboxItemCard({
                   companyName={company.companyName}
                 />
               ) : (
-                <Badge key={company.id} tone="warning">
-                  {company.companyName} needs review
+                <Badge key={company.id} tone="muted">
+                  {company.companyName}
                 </Badge>
               );
             })}

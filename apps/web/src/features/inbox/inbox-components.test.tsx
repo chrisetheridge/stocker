@@ -22,7 +22,7 @@ const sampleItem = {
     sourceMetadata: {},
     readState: "unread",
     savedForResearch: false,
-    enrichmentState: "needs_review",
+    enrichmentState: "complete",
     createdAt: "2026-04-25T12:01:00.000Z",
     updatedAt: "2026-04-25T12:01:00.000Z",
   },
@@ -58,7 +58,7 @@ const sampleItem = {
   enrichment: {
     id: "enrichment-1",
     sourceItemId: "item-1",
-    state: "needs_review",
+    state: "complete",
     summary: "Acme is relevant.",
     modelProvider: "openai-compatible",
     modelName: "local-model",
@@ -105,9 +105,9 @@ describe("Inbox components", () => {
     expect(markup).toContain("Enrichment");
   });
 
-  it("renders needs-review and validation states", () => {
+  it("renders complete and validation states", () => {
     const badgeMarkup = renderToStaticMarkup(
-      React.createElement(EnrichmentStateBadge, { state: "needs_review" }),
+      React.createElement(EnrichmentStateBadge, { state: "complete" }),
     );
     const cardMarkup = renderToStaticMarkup(
       React.createElement(InboxItemCard, {
@@ -116,9 +116,9 @@ describe("Inbox components", () => {
       }),
     );
 
-    expect(badgeMarkup).toContain("Needs review");
+    expect(badgeMarkup).toContain("Complete");
     expect(cardMarkup).toContain("Hacker News");
-    expect(cardMarkup).toContain("Needs review");
+    expect(cardMarkup).toContain("Complete");
     expect(cardMarkup).toContain("Acme launches new product");
   });
 

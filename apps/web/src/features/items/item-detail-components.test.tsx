@@ -130,12 +130,33 @@ describe("Item detail components", () => {
     expect(markup).toContain("Retry enrichment");
   });
 
+  it("renders complete state for previously review-needed items", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(ItemDetailView, {
+        detail: {
+          ...detail,
+          item: { ...detail.item, enrichmentState: "complete" },
+          enrichment: {
+            ...detail.enrichment,
+            state: "complete",
+          },
+        },
+        onToggleSaved: () => undefined,
+        onRetryEnrichment: () => undefined,
+        onRefreshStock: () => undefined,
+        onApplyCorrection: () => undefined,
+      }),
+    );
+
+    expect(markup).toContain("complete");
+  });
+
   it("renders needs-review company cards and stale snapshots", () => {
     const company = detail.companies[0]!;
     const snapshot = detail.snapshots[0]!;
-    const needsReviewCompany = {
+    const validatedCompany = {
       ...company,
-      matchStatus: "needs_review",
+      matchStatus: "validated",
     };
     const staleSnapshot = {
       ...snapshot,
@@ -146,7 +167,7 @@ describe("Item detail components", () => {
         "div",
         null,
         React.createElement(CompanyCard, {
-          company: needsReviewCompany,
+          company: validatedCompany,
           snapshot,
           onApplyCorrection: () => undefined,
         }),
@@ -154,7 +175,7 @@ describe("Item detail components", () => {
       ),
     );
 
-    expect(markup).toContain("Needs review");
+    expect(markup).toContain("Validated");
     expect(markup).toContain("Stale cache");
   });
 });

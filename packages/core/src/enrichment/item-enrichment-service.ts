@@ -28,7 +28,7 @@ export type ItemEnrichmentTrigger =
 export type ItemEnrichmentSucceeded = {
   readonly status: 'succeeded';
   readonly sourceItemId: string;
-  readonly enrichmentState: 'complete' | 'needs_review';
+  readonly enrichmentState: 'complete';
   readonly runId: string;
   readonly enrichment: ItemEnrichmentRecord;
   readonly companies: ItemCompanyRecord[];
@@ -195,11 +195,7 @@ export class ItemEnrichmentService {
         }
       }
 
-      const enrichmentState = matchedCompanies.some(
-        (company) => company.matchStatus === 'needs_review',
-      )
-        ? 'needs_review'
-        : 'complete';
+      const enrichmentState = 'complete' as const;
 
       const enrichment = await this.dependencies.enrichmentRepository.upsertItemEnrichment(
         {

@@ -135,7 +135,6 @@ export function InboxFilters({
           <option value="">All</option>
           <option value="pending">Pending</option>
           <option value="complete">Complete</option>
-          <option value="needs_review">Needs review</option>
           <option value="failed">Failed</option>
         </Select>
       </label>

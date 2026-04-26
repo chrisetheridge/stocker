@@ -7,8 +7,6 @@ import type {
 import type { EnrichmentCompanyCandidate } from '@stocker/llm';
 import type { MarketDataProvider } from '@stocker/market-data';
 
-import { isValidatedConfidence } from './confidence';
-
 export type CompanyMatcherDependencies = {
   readonly tickerCorrectionsRepository: Pick<
     TickerCorrectionsRepository,
@@ -60,23 +58,11 @@ function buildBaseCompanyInput(
     relationshipType: candidate.relationshipType,
     relevanceExplanation: candidate.relevanceExplanation,
     confidence: candidate.confidence,
-    matchStatus: 'needs_review',
+    matchStatus: 'validated',
     evidenceText: candidate.evidenceText,
     createdAt: now,
     updatedAt: now,
   };
-}
-
-function isSingleHighConfidenceSearchResult(
-  confidence: number,
-  searchConfidence: number,
-  resultCount: number,
-): boolean {
-  return (
-    isValidatedConfidence(confidence) &&
-    isValidatedConfidence(searchConfidence) &&
-    resultCount === 1
-  );
 }
 
 export class CompanyMatcher {
@@ -117,7 +103,7 @@ export class CompanyMatcher {
         company.ticker = correction.correctTicker;
         company.exchange =
           correction.correctExchange ?? snapshot?.exchange ?? undefined;
-        company.matchStatus = snapshot ? 'validated' : 'needs_review';
+        company.matchStatus = 'validated';
         matched.push(company);
         continue;
       }
@@ -140,10 +126,9 @@ export class CompanyMatcher {
           candidate,
           now,
         );
-        if (snapshot && isValidatedConfidence(candidate.confidence)) {
+        if (snapshot) {
           company.ticker = tickerHint;
           company.exchange = snapshot.exchange ?? undefined;
-          company.matchStatus = 'validated';
         }
         matched.push(company);
         continue;
@@ -166,32 +151,13 @@ export class CompanyMatcher {
         now,
       );
 
-      if (
-        exactMatch &&
-        isValidatedConfidence(candidate.confidence) &&
-        isValidatedConfidence(exactMatch.confidence)
-      ) {
+      if (exactMatch) {
         company.ticker = exactMatch.ticker;
         company.exchange = exactMatch.exchange ?? undefined;
-        company.matchStatus = 'validated';
-        matched.push(company);
-        continue;
-      }
-
-      if (
-        bestMatch &&
-        isSingleHighConfidenceSearchResult(
-          candidate.confidence,
-          bestMatch.confidence,
-          searchResults.length,
-        )
-      ) {
+      } else if (bestMatch) {
         company.ticker = bestMatch.ticker;
         company.exchange = bestMatch.exchange ?? undefined;
-        company.matchStatus = 'validated';
-      } else if (bestMatch) {
         company.companyName = bestMatch.companyName;
-        company.matchStatus = 'needs_review';
       }
 
       matched.push(company);

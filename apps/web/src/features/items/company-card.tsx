@@ -23,9 +23,7 @@ export function CompanyCard({
     <Card>
       <CardHeader className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone={company.matchStatus === "validated" ? "success" : "warning"}>
-            {company.matchStatus === "validated" ? "Validated" : "Needs review"}
-          </Badge>
+          <Badge tone="success">Validated</Badge>
           <Badge tone="muted">{company.relationshipType}</Badge>
           <Badge tone="muted">Confidence {Math.round(company.confidence * 100)}%</Badge>
         </div>

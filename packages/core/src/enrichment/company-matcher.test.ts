@@ -128,7 +128,7 @@ describe('CompanyMatcher', () => {
     });
   });
 
-  it('marks ambiguous search results as needs review', async () => {
+  it('validates ambiguous search results with the best provider match', async () => {
     const { matcher, searchCompanies } = createDependencies({
       searchResults: [
         {
@@ -165,8 +165,8 @@ describe('CompanyMatcher', () => {
     expect(searchCompanies).toHaveBeenCalledWith('Apple', 'US');
     expect(result[0]).toMatchObject({
       companyName: 'Apple Inc.',
-      matchStatus: 'needs_review',
-      ticker: undefined,
+      matchStatus: 'validated',
+      ticker: 'AAPL',
     });
   });
 
@@ -233,7 +233,7 @@ describe('CompanyMatcher', () => {
 
     expect(result[0]).toMatchObject({
       companyName: 'Unknown Company',
-      matchStatus: 'needs_review',
+      matchStatus: 'validated',
       ticker: undefined,
     });
   });

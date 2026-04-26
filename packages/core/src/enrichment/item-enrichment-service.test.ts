@@ -79,7 +79,7 @@ function createMatcher(
           | 'supplier',
         relevanceExplanation: company.relevanceExplanation,
         confidence: company.confidence,
-        matchStatus: company.matchStatus as 'validated' | 'needs_review',
+        matchStatus: company.matchStatus as 'validated',
         evidenceText: company.evidenceText ?? undefined,
         createdAt: company.createdAt,
         updatedAt: company.updatedAt,
@@ -267,7 +267,7 @@ describe('ItemEnrichmentService', () => {
     }
   });
 
-  it('persists needs-review enrichment results', async () => {
+  it('persists complete enrichment results when market data is unavailable', async () => {
     const { service } = createDependencies({
       llmOutput: {
         companies: [
@@ -287,7 +287,7 @@ describe('ItemEnrichmentService', () => {
           relationshipType: 'mentioned',
           relevanceExplanation: 'Apple is mentioned.',
           confidence: 0.4,
-          matchStatus: 'needs_review',
+          matchStatus: 'validated',
           createdAt: '2026-04-25T10:05:00.000Z',
           updatedAt: '2026-04-25T10:05:00.000Z',
         },
@@ -298,7 +298,7 @@ describe('ItemEnrichmentService', () => {
 
     expect(result.status).toBe('succeeded');
     if (result.status === 'succeeded') {
-      expect(result.enrichmentState).toBe('needs_review');
+      expect(result.enrichmentState).toBe('complete');
     }
   });
 

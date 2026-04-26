@@ -29,6 +29,31 @@ describe('YahooFinanceMarketDataProvider', () => {
     ]);
   });
 
+  it('filters non-equity search results', async () => {
+    const provider = new YahooFinanceMarketDataProvider({
+      search: async () => ({
+        quotes: [
+          {
+            symbol: 'UNITREEAI-USD',
+            shortname: 'Unitree G1 AI USD',
+            longname: 'Unitree G1 AI USD',
+            exchange: 'CCC',
+            exchDisp: 'CCC',
+            quoteType: 'CRYPTOCURRENCY',
+            sector: 'Technology',
+            score: 20001,
+          },
+        ],
+      }),
+      quote: async () => yahooQuoteFixture,
+      quoteSummary: async () => yahooQuoteSummaryFixture,
+    });
+
+    const results = await provider.searchCompanies('Unitree', 'US');
+
+    expect(results).toEqual([]);
+  });
+
   it('normalizes equity snapshots and preserves raw payloads', async () => {
     const provider = new YahooFinanceMarketDataProvider({
       search: async () => ({ quotes: [] }),

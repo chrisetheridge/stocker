@@ -56,6 +56,10 @@ export function normalizeSearchResult(
   candidate: Record<string, unknown>,
   query: string,
 ): CompanySearchResult | null {
+  if (!isEquityLike(candidate)) {
+    return null;
+  }
+
   const ticker = readString(candidate, ['symbol']);
   const companyName = readString(candidate, [
     'longname',

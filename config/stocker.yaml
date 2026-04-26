@@ -22,6 +22,6 @@ llm:
     type: openai-compatible
     baseUrl: http://192.168.2.88:1234/v1
     apiKeyEnv: LM_STUDIO_API_KEY
-    model: unsloth/qwen3.6-35b-a3b
+    model: google/gemma-4-e4b
   prompts:
     enrichmentSystem: You extract public-company stock relevance from article metadata.

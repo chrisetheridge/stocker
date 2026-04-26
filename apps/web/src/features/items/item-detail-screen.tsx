@@ -32,10 +32,16 @@ export function ItemDetailView({
     exchange?: string;
     notes?: string;
   }) => Promise<void> | void;
-}) {
+  }) {
   const snapshotByTicker = new Map(
     detail.snapshots.map((snapshot) => [snapshot.ticker, snapshot]),
   );
+  const enrichmentState =
+    detail.item.enrichmentState === "failed"
+      ? "failed"
+      : detail.item.enrichmentState === "pending"
+        ? "pending"
+        : "complete";
 
   return (
     <div className="space-y-6">
@@ -46,16 +52,14 @@ export function ItemDetailView({
             <Badge tone="muted">{detail.item.readState}</Badge>
             <Badge
               tone={
-                detail.item.enrichmentState === "failed"
+                enrichmentState === "failed"
                   ? "danger"
-                  : detail.item.enrichmentState === "needs_review"
-                    ? "warning"
-                    : detail.item.enrichmentState === "complete"
-                      ? "success"
-                      : "info"
+                  : enrichmentState === "complete"
+                    ? "success"
+                    : "info"
               }
             >
-              {detail.item.enrichmentState.replaceAll("_", " ")}
+              {enrichmentState.replaceAll("_", " ")}
             </Badge>
           </div>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -81,7 +85,7 @@ export function ItemDetailView({
             onToggleSaved={onToggleSaved}
             onRetry={onRetryEnrichment}
             onRefreshStock={onRefreshStock}
-            retryDisabled={detail.item.enrichmentState !== "failed"}
+            retryDisabled={detail.item.enrichmentState === "pending"}
           />
           {detail.enrichment?.errorMessage ? (
             <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">
