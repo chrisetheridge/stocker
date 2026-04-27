@@ -20,7 +20,7 @@ market:
 llm:
   provider:
     type: openai-compatible
-    baseUrl: http://192.168.2.88:1234/v1
+    baseUrl: http://localhost:1234/v1
     apiKeyEnv: LM_STUDIO_API_KEY
     model: google/gemma-4-e4b
   prompts:
